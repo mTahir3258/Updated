@@ -37,6 +37,8 @@ class ClientDetailScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   shadows: [Shadow(blurRadius: 2, color: Colors.black26)],
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               background: Stack(
                 fit: StackFit.expand,
@@ -219,15 +221,18 @@ class ClientDetailScreen extends StatelessWidget {
                   child: Icon(icon, color: iconColor, size: 24),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
-                if (action != null) action,
+                if (action != null) ...[const SizedBox(width: 8), action],
               ],
             ),
           ),
@@ -281,6 +286,8 @@ class ClientDetailScreen extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -311,9 +318,14 @@ class ClientDetailScreen extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       ),
@@ -354,6 +366,8 @@ class ClientDetailScreen extends StatelessWidget {
                     Text(
                       person.name,
                       style: const TextStyle(fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (person.isPrimary) ...[
                       const SizedBox(width: 8),
@@ -385,6 +399,8 @@ class ClientDetailScreen extends StatelessWidget {
                     fontSize: 13,
                     color: AppColors.textSecondary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

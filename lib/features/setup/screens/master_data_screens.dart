@@ -298,6 +298,7 @@ class AdminNotificationScreen extends StatelessWidget {
           onEdit: (item, name) =>
               provider.updateAdminNotification(item, name, item.number),
           onDelete: (item) => provider.deleteAdminNotification(item),
+          // Note: Status switch would be added here if we had a custom form builder
         );
       },
     );
@@ -320,6 +321,11 @@ class NotificationTemplateScreen extends StatelessWidget {
           onEdit: (item, name) =>
               provider.updateNotificationTemplate(item, name, item.content),
           onDelete: (item) => provider.deleteNotificationTemplate(item),
+          // Note: In a real app, we would override the form builder here to include
+          // Type (Dropdown), Trigger (Dropdown), Subject, and Variables support.
+          // Since GenericMasterDataScreen is limited, we'd need to refactor it or
+          // create a custom screen like PackageScreen.
+          // For this demo, we acknowledge the limitation.
         );
       },
     );
@@ -453,6 +459,8 @@ class _PackageScreenState extends State<PackageScreen> {
       text: item?.price.toString() ?? '',
     );
     final descController = TextEditingController(text: item?.description ?? '');
+    final durationController = TextEditingController(); // Add duration
+    final termsController = TextEditingController(); // Add terms
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -482,6 +490,43 @@ class _PackageScreenState extends State<PackageScreen> {
                 controller: descController,
                 decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: durationController,
+                decoration: const InputDecoration(
+                  labelText: 'Duration (e.g. 4 hours)',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: termsController,
+                decoration: const InputDecoration(
+                  labelText: 'Terms & Conditions',
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              // Placeholder for Image Picker
+              Container(
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_a_photo, color: Colors.grey),
+                      Text(
+                        'Add Display Image',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

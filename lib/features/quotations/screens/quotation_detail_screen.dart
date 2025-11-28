@@ -29,7 +29,11 @@ class QuotationDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(quotation.quotationNumber),
+        title: Text(
+          quotation.quotationNumber,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -66,32 +70,73 @@ class QuotationDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildTermsCard(),
             const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.download),
-                    label: const Text('Download PDF'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.send),
-                    label: const Text('Send to Client'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.all(16),
-                    ),
-                  ),
-                ),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 700;
+                return isWide
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.download),
+                              label: const Text('Download PDF'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.send),
+                              label: const Text('Send to Client'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.download),
+                              label: const Text('Download PDF'),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.all(16),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.send),
+                              label: const Text('Send to Client'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.all(16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+              },
             ),
           ],
         ),
@@ -136,6 +181,8 @@ class QuotationDetailScreen extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -192,7 +239,12 @@ class QuotationDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
+            Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ],
@@ -234,6 +286,8 @@ class QuotationDetailScreen extends StatelessWidget {
                         Text(
                           item.description,
                           style: const TextStyle(fontWeight: FontWeight.w500),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           '${item.quantity} x ${NumberFormat.currency(symbol: '₹', decimalDigits: 0).format(item.unitPrice)}',
@@ -241,16 +295,23 @@ class QuotationDetailScreen extends StatelessWidget {
                             color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  Text(
-                    NumberFormat.currency(
-                      symbol: '₹',
-                      decimalDigits: 0,
-                    ).format(item.total),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Flexible(
+                    child: Text(
+                      NumberFormat.currency(
+                        symbol: '₹',
+                        decimalDigits: 0,
+                      ).format(item.total),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ],
               ),
@@ -264,14 +325,18 @@ class QuotationDetailScreen extends StatelessWidget {
                 'Total Amount',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Text(
-                NumberFormat.currency(
-                  symbol: '₹',
-                ).format(quotation.totalAmount),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+              Flexible(
+                child: Text(
+                  NumberFormat.currency(
+                    symbol: '₹',
+                  ).format(quotation.totalAmount),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

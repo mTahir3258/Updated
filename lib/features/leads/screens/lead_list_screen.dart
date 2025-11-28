@@ -11,6 +11,7 @@ import 'package:ui_specification/core/widgets/filter_bar.dart';
 import 'package:ui_specification/core/widgets/pagination_controls.dart';
 import 'package:ui_specification/features/leads/providers/lead_provider.dart';
 import 'package:ui_specification/models/lead.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 
 /// Lead list screen with responsive design
 class LeadListScreen extends StatefulWidget {
@@ -78,7 +79,9 @@ class _LeadListScreenState extends State<LeadListScreen> {
                 horizontal: AppDimensions.spacing8,
               ),
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(Routes.leadForm);
+                },
                 icon: const Icon(Icons.add),
                 label: const Text('Add Lead'),
               ),
@@ -86,7 +89,12 @@ class _LeadListScreenState extends State<LeadListScreen> {
         ],
       ),
       floatingActionButton: Responsive.isMobile(context)
-          ? FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add))
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(Routes.leadForm);
+              },
+              child: const Icon(Icons.add),
+            )
           : null,
       body: Consumer<LeadProvider>(
         builder: (context, leadProvider, child) {
@@ -131,7 +139,9 @@ class _LeadListScreenState extends State<LeadListScreen> {
                         message: 'No leads found',
                         subtitle: 'Try adjusting your search or filters',
                         actionLabel: 'Add Lead',
-                        onActionPressed: () {},
+                        onActionPressed: () {
+                          Navigator.of(context).pushNamed(Routes.leadForm);
+                        },
                       )
                     : Responsive(
                         mobile: _buildMobileList(paginatedLeads),
@@ -174,7 +184,7 @@ class _LeadListScreenState extends State<LeadListScreen> {
           onTap: () {
             Navigator.of(
               context,
-            ).pushNamed('/leads/details', arguments: lead.id);
+            ).pushNamed(Routes.leadDetails, arguments: lead.id);
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,6 +234,34 @@ class _LeadListScreenState extends State<LeadListScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: AppDimensions.spacing8),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(
+                        context,
+                      ).pushNamed(Routes.leadDetails, arguments: lead.id);
+                    },
+                    icon: const Icon(Icons.visibility_outlined, size: 18),
+                    label: const Text('View'),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        Routes.leadForm,
+                        arguments: lead,
+                      );
+                    },
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('Edit'),
+                  ),
+                ],
+              ),
             ],
           ),
         );
@@ -249,9 +287,27 @@ class _LeadListScreenState extends State<LeadListScreen> {
             rows: leads.map((lead) {
               return DataRow(
                 cells: [
-                  DataCell(Text(lead.fullName)),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        lead.fullName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(Text(lead.phone)),
-                  DataCell(Text(lead.email)),
+                  DataCell(
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        lead.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(
                     StatusBadge(
                       label: lead.status.toUpperCase(),
@@ -259,7 +315,16 @@ class _LeadListScreenState extends State<LeadListScreen> {
                       small: true,
                     ),
                   ),
-                  DataCell(Text(lead.source)),
+                  DataCell(
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        lead.source,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -269,13 +334,17 @@ class _LeadListScreenState extends State<LeadListScreen> {
                           onPressed: () {
                             Navigator.of(
                               context,
-                            ).pushNamed('/leads/details', arguments: lead.id);
+                            ).pushNamed(Routes.leadDetails, arguments: lead.id);
                           },
                           tooltip: 'View',
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(Routes.leadForm, arguments: lead);
+                          },
                           tooltip: 'Edit',
                         ),
                         IconButton(

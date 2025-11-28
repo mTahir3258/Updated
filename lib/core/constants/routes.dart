@@ -3,6 +3,7 @@ class Routes {
   // Auth Routes
   static const String splash = '/';
   static const String login = '/login';
+  static const String forgotPassword = '/forgot-password';
 
   // Main Routes
   static const String dashboard = '/dashboard';
@@ -10,18 +11,22 @@ class Routes {
   // Lead Routes
   static const String leadList = '/leads';
   static const String leadDetails = '/leads/:id';
+  static const String leadForm = '/leads/form';
 
   // Client Routes
   static const String clientList = '/clients';
   static const String clientDetails = '/clients/:id';
+  static const String clientForm = '/clients/form';
 
   // Order Routes
   static const String orderList = '/orders';
   static const String orderDetails = '/orders/:id';
+  static const String orderForm = '/orders/form';
 
   // Event Routes
   static const String eventList = '/events';
   static const String eventDetails = '/events/:id';
+  static const String eventForm = '/events/form';
 
   // Quotation Routes
   static const String quotationList = '/quotations';
@@ -44,4 +49,6 @@ class Routes {
   // Communication Routes
   static const String messageList = '/messages';
   static const String chat = '/messages/:mobile';
+  static const String myProfile = '/my-profile';
+  static const String incompleteLeads = '/leads/incomplete';
 }

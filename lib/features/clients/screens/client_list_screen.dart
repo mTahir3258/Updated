@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ui_specification/models/client.dart';
 import 'package:provider/provider.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/theme/app_dimensions.dart';
 import 'package:ui_specification/core/utils/responsive.dart';
@@ -9,7 +11,6 @@ import 'package:ui_specification/core/widgets/empty_state.dart';
 import 'package:ui_specification/core/widgets/filter_bar.dart';
 import 'package:ui_specification/core/widgets/pagination_controls.dart';
 import 'package:ui_specification/features/clients/providers/client_provider.dart';
-import 'package:ui_specification/models/client.dart';
 
 /// Client list screen
 class ClientListScreen extends StatefulWidget {
@@ -76,7 +77,8 @@ class _ClientListScreenState extends State<ClientListScreen> {
                 horizontal: AppDimensions.spacing8,
               ),
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(Routes.clientForm),
                 icon: const Icon(Icons.add),
                 label: const Text('Add Client'),
               ),
@@ -84,7 +86,11 @@ class _ClientListScreenState extends State<ClientListScreen> {
         ],
       ),
       floatingActionButton: Responsive.isMobile(context)
-          ? FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add))
+          ? FloatingActionButton(
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(Routes.clientForm),
+              child: const Icon(Icons.add),
+            )
           : null,
       body: Consumer<ClientProvider>(
         builder: (context, clientProvider, child) {
@@ -123,7 +129,8 @@ class _ClientListScreenState extends State<ClientListScreen> {
                         message: 'No clients found',
                         subtitle: 'Try adjusting your search or filters',
                         actionLabel: 'Add Client',
-                        onActionPressed: () {},
+                        onActionPressed: () =>
+                            Navigator.of(context).pushNamed(Routes.clientForm),
                       )
                     : Responsive(
                         mobile: _buildMobileList(paginatedClients),
@@ -163,11 +170,9 @@ class _ClientListScreenState extends State<ClientListScreen> {
       itemBuilder: (context, index) {
         final client = clients[index];
         return CustomCard(
-          onTap: () {
-            Navigator.of(
-              context,
-            ).pushNamed('/clients/details', arguments: client.id);
-          },
+          onTap: () => Navigator.of(
+            context,
+          ).pushNamed(Routes.clientDetails, arguments: client.id),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -276,10 +281,37 @@ class _ClientListScreenState extends State<ClientListScreen> {
                       ),
                     ),
                   ),
-                  DataCell(Text(client.fullName)),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        client.fullName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(Text(client.whatsappNumber)),
-                  DataCell(Text(client.source)),
-                  DataCell(Text(client.createdBy)),
+                  DataCell(
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        client.source,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        client.createdBy,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(
                     Text(
                       '${client.createdDate.day}/${client.createdDate.month}/${client.createdDate.year}',
@@ -293,16 +325,19 @@ class _ClientListScreenState extends State<ClientListScreen> {
                           icon: const Icon(Icons.visibility_outlined, size: 20),
                           onPressed: () {
                             Navigator.of(context).pushNamed(
-                              '/clients/details',
+                              Routes.clientDetails,
                               arguments: client.id,
                             );
                           },
-                          tooltip: 'View',
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () {},
-                          tooltip: 'Edit',
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(
+                              Routes.clientForm,
+                              arguments: client.id,
+                            );
+                          },
                         ),
                       ],
                     ),

@@ -144,6 +144,65 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
   ];
   late Set<String> _selectedPermissions;
 
+  List<Widget> _buildGroupedPermissions() {
+    final Map<String, List<String>> grouped = {};
+    for (var p in _availablePermissions) {
+      final module = p
+          .split('_')
+          .last; // e.g., 'dashboard' from 'read_dashboard'
+      if (!grouped.containsKey(module)) {
+        grouped[module] = [];
+      }
+      grouped[module]!.add(p);
+    }
+
+    return grouped.entries.map((entry) {
+      final moduleName = entry.key.toUpperCase();
+      final permissions = entry.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              moduleName,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: permissions.map((permission) {
+              final isSelected = _selectedPermissions.contains(permission);
+              return FilterChip(
+                label: Text(
+                  permission.split('_').first.toUpperCase(),
+                ), // READ/WRITE
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedPermissions.add(permission);
+                    } else {
+                      _selectedPermissions.remove(permission);
+                    }
+                  });
+                },
+                selectedColor: Colors.blue.shade100,
+                checkmarkColor: Colors.blue,
+              );
+            }).toList(),
+          ),
+          const Divider(),
+        ],
+      );
+    }).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -195,32 +254,7 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _availablePermissions.map((permission) {
-                          final isSelected = _selectedPermissions.contains(
-                            permission,
-                          );
-                          return FilterChip(
-                            label: Text(
-                              permission.replaceAll('_', ' ').toUpperCase(),
-                            ),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedPermissions.add(permission);
-                                } else {
-                                  _selectedPermissions.remove(permission);
-                                }
-                              });
-                            },
-                            selectedColor: Colors.blue.shade100,
-                            checkmarkColor: Colors.blue,
-                          );
-                        }).toList(),
-                      ),
+                      ..._buildGroupedPermissions(),
                     ],
                   ),
                 ),

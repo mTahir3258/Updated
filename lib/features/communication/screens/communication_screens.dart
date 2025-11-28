@@ -226,22 +226,68 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          hintText: 'Type a message...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.note_add_outlined),
+                            onPressed: () {
+                              // Template Selector
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) => Container(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                        'Select Template',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ListTile(
+                                        title: const Text('Meeting Reminder'),
+                                        onTap: () {
+                                          _messageController.text =
+                                              "Hi, just a reminder about our meeting tomorrow.";
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: const Text('Payment Follow-up'),
+                                        onTap: () {
+                                          _messageController.text =
+                                              "Hi, this is a gentle reminder regarding the pending payment.";
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              decoration: InputDecoration(
+                                hintText: 'Type a message...',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                              ),
+                              textCapitalization: TextCapitalization.sentences,
+                            ),
                           ),
-                        ),
-                        textCapitalization: TextCapitalization.sentences,
+                        ],
                       ),
                     ),
                     const SizedBox(width: 8),

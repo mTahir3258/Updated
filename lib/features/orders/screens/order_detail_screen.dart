@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/features/orders/providers/order_provider.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 import 'package:intl/intl.dart';
 
 /// Modern Order Details Screen
@@ -68,7 +69,16 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
             actions: [
-              IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    Routes.orderForm,
+                    arguments: order,
+                  );
+                },
+              ),
               PopupMenuButton(
                 itemBuilder: (context) => [
                   const PopupMenuItem(child: Text('Send Reminder')),

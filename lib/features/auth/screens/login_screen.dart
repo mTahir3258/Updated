@@ -6,6 +6,7 @@ import 'package:ui_specification/core/utils/responsive.dart';
 import 'package:ui_specification/core/utils/validators.dart';
 import 'package:ui_specification/core/widgets/custom_text_field.dart';
 import 'package:ui_specification/core/widgets/loading_indicator.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 import 'package:ui_specification/features/auth/providers/auth_provider.dart';
 
 /// Login screen with responsive layout
@@ -230,12 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Forgot Password
                   TextButton(
                     onPressed: () {
-                      // TODO: Implement forgot password
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Forgot password feature coming soon'),
-                        ),
-                      );
+                      Navigator.of(context).pushNamed(Routes.forgotPassword);
                     },
                     child: const Text('Forgot Password?'),
                   ),

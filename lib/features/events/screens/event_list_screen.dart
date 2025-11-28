@@ -13,6 +13,7 @@ import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/features/events/providers/event_provider.dart';
 import 'package:ui_specification/models/event.dart';
 import 'package:intl/intl.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});
@@ -143,7 +144,7 @@ class _EventListScreenState extends State<EventListScreen> {
               ),
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Add event
+                  Navigator.of(context).pushNamed(Routes.eventForm);
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Add Event'),
@@ -154,7 +155,7 @@ class _EventListScreenState extends State<EventListScreen> {
       floatingActionButton: Responsive.isMobile(context)
           ? FloatingActionButton(
               onPressed: () {
-                // TODO: Add event
+                Navigator.of(context).pushNamed(Routes.eventForm);
               },
               child: const Icon(Icons.add),
             )
@@ -265,7 +266,8 @@ class _EventListScreenState extends State<EventListScreen> {
                   message: 'No events found',
                   subtitle: 'Try adjusting your filters',
                   actionLabel: 'Add Event',
-                  onActionPressed: () {},
+                  onActionPressed: () =>
+                      Navigator.of(context).pushNamed(Routes.eventForm),
                 )
               : Responsive(
                   mobile: ListView.builder(
@@ -294,9 +296,6 @@ class _EventListScreenState extends State<EventListScreen> {
 
   Widget _buildEventCard(Event event) {
     return CustomCard(
-      onTap: () {
-        Navigator.of(context).pushNamed('/events/details', arguments: event.id);
-      },
       margin: const EdgeInsets.only(bottom: AppDimensions.spacing8),
       child: Padding(
         padding: const EdgeInsets.all(AppDimensions.spacing12),
@@ -386,10 +385,46 @@ class _EventListScreenState extends State<EventListScreen> {
               return DataRow(
                 cells: [
                   DataCell(Text(DateFormat('MMM dd, yyyy').format(event.date))),
-                  DataCell(Text(event.name)),
-                  DataCell(Text(event.clientName)),
-                  DataCell(Text(event.type)),
-                  DataCell(Text(event.venue)),
+                  DataCell(
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        event.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        event.clientName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        event.type,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        event.venue,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(
                     StatusBadge(
                       label: event.status.name.toUpperCase(),
@@ -404,15 +439,20 @@ class _EventListScreenState extends State<EventListScreen> {
                         IconButton(
                           icon: const Icon(Icons.visibility_outlined, size: 20),
                           onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).pushNamed('/events/details', arguments: event.id);
+                            Navigator.of(context).pushNamed(
+                              Routes.eventDetails,
+                              arguments: event.id,
+                            );
                           },
                           tooltip: 'View',
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(Routes.eventForm, arguments: event);
+                          },
                           tooltip: 'Edit',
                         ),
                       ],

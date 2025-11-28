@@ -9,6 +9,7 @@ import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/features/events/providers/event_provider.dart';
 import 'package:ui_specification/models/event.dart';
 import 'package:intl/intl.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final String? eventId;
@@ -62,7 +63,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       floating: false,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
-        title: Text(event.name),
+        title: Text(event.name, maxLines: 2, overflow: TextOverflow.ellipsis),
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -99,7 +100,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit, size: 20),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamed(Routes.eventForm, arguments: event);
+                  },
                 ),
               ],
             ),
@@ -275,6 +280,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             child: Text(
               value,
               style: const TextStyle(fontWeight: FontWeight.w500),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

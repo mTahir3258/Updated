@@ -23,7 +23,7 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
             onPressed: () {
-              // TODO: Navigate to profile
+              Navigator.pushNamed(context, '/my-profile');
             },
           ),
           const SizedBox(width: AppDimensions.spacing8),
@@ -357,6 +357,12 @@ class DashboardScreen extends StatelessWidget {
             icon: Icons.message_outlined,
             title: 'Messages',
             route: '/messages',
+          ),
+          _buildDrawerItem(
+            context,
+            icon: Icons.account_circle_outlined,
+            title: 'My Profile',
+            route: '/my-profile',
           ),
           const Divider(),
           ListTile(

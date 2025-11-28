@@ -7,6 +7,7 @@ import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/features/leads/providers/lead_provider.dart';
 import 'package:ui_specification/features/communication/providers/communication_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:ui_specification/core/constants/routes.dart';
 
 /// Modern Lead Details Screen with premium styling
 class LeadDetailScreen extends StatelessWidget {
@@ -41,6 +42,8 @@ class LeadDetailScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   shadows: [Shadow(blurRadius: 2, color: Colors.black26)],
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               background: Container(
                 decoration: const BoxDecoration(
@@ -71,7 +74,13 @@ class LeadDetailScreen extends StatelessWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    Routes.leadForm,
+                    arguments: lead,
+                  );
+                },
                 tooltip: 'Edit Lead',
               ),
               PopupMenuButton(
@@ -160,36 +169,6 @@ class LeadDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Quotations Section
-                _buildSectionCard(
-                  title: 'Quotations',
-                  icon: Icons.description_outlined,
-                  count: 0,
-                  actionLabel: 'Generate Quotation',
-                  onAction: () {},
-                  child: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.description_outlined,
-                            size: 48,
-                            color: AppColors.textSecondary,
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'No quotations yet',
-                            style: TextStyle(color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
                 // Communications Timeline
                 Consumer<CommunicationProvider>(
                   builder: (context, commProvider, child) {
@@ -251,7 +230,11 @@ class LeadDetailScreen extends StatelessWidget {
                                       color: AppColors.secondary,
                                     ),
                                   ),
-                                  title: Text(msg.content),
+                                  title: Text(
+                                    msg.content,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   subtitle: Text(
                                     DateFormat(
                                       'MMM d, y h:mm a',
@@ -369,11 +352,15 @@ class LeadDetailScreen extends StatelessWidget {
                   child: Icon(icon, color: AppColors.secondary),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (count > 0) ...[
@@ -397,11 +384,15 @@ class LeadDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-                const Spacer(),
+                const SizedBox(width: 8),
                 OutlinedButton.icon(
                   onPressed: onAction,
                   icon: const Icon(Icons.add, size: 16),
-                  label: Text(actionLabel),
+                  label: Text(
+                    actionLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -448,6 +439,8 @@ class LeadDetailScreen extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

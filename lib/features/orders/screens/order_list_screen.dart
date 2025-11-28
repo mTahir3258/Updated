@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/theme/app_dimensions.dart';
 import 'package:ui_specification/core/utils/responsive.dart';
 import 'package:ui_specification/core/widgets/custom_card.dart';
 import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/core/widgets/pagination_controls.dart';
+import 'package:ui_specification/core/widgets/loading_indicator.dart';
+import 'package:ui_specification/core/widgets/empty_state.dart';
+import 'package:ui_specification/core/constants/routes.dart';
+import 'package:ui_specification/features/orders/providers/order_provider.dart';
+import 'package:ui_specification/models/order.dart';
+import 'package:intl/intl.dart';
 
 /// Order list screen with tabs
 class OrderListScreen extends StatefulWidget {
@@ -24,6 +31,9 @@ class _OrderListScreenState extends State<OrderListScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderProvider>().loadOrders();
+    });
   }
 
   @override
@@ -31,28 +41,6 @@ class _OrderListScreenState extends State<OrderListScreen>
     _tabController.dispose();
     super.dispose();
   }
-
-  // Mock data
-  List<Map<String, dynamic>> get mockOrders => [
-    {
-      'id': '001',
-      'clientName': 'Rajesh & Priya',
-      'eventName': 'Wedding Ceremony',
-      'eventDate': '2024-12-15',
-      'venue': 'Grand Palace Hotel',
-      'status': 'confirmed',
-      'paymentStatus': 'partial',
-    },
-    {
-      'id': '002',
-      'clientName': 'Amit & Sneha',
-      'eventName': 'Reception',
-      'eventDate': '2024-12-20',
-      'venue': 'Royal Gardens',
-      'status': 'pending',
-      'paymentStatus': 'pending',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +66,9 @@ class _OrderListScreenState extends State<OrderListScreen>
                 vertical: AppDimensions.spacing8,
               ),
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(Routes.orderForm);
+                },
                 icon: const Icon(Icons.add),
                 label: const Text('New Order'),
               ),
@@ -86,57 +76,107 @@ class _OrderListScreenState extends State<OrderListScreen>
         ],
       ),
       floatingActionButton: Responsive.isMobile(context)
-          ? FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add))
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(Routes.orderForm);
+              },
+              child: const Icon(Icons.add),
+            )
           : null,
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildOrdersList(),
-          _buildOrdersList(),
-          _buildOrdersList(),
-          _buildOrdersList(),
-          _buildOrdersList(),
-        ],
+      body: Consumer<OrderProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const LoadingIndicator(message: 'Loading orders...');
+          }
+
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              _buildOrdersList(provider.orders),
+              _buildOrdersList(provider.upcomingOrders),
+              _buildOrdersList(provider.unassignedOrders),
+              _buildOrdersList(provider.paymentDueOrders),
+              _buildOrdersList(
+                provider.orders.where((o) => o.status == 'completed').toList(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildOrdersList() {
+  Widget _buildOrdersList(List<Order> orders) {
+    if (orders.isEmpty) {
+      return EmptyState(
+        icon: Icons.shopping_cart_outlined,
+        message: 'No orders found',
+        subtitle: 'Orders will appear here once created',
+        actionLabel: 'Create Order',
+        onActionPressed: () =>
+            Navigator.of(context).pushNamed(Routes.orderForm),
+      );
+    }
+
+    final totalItems = orders.length;
+    final totalPages = (totalItems / _rowsPerPage).ceil();
+    final startIndex = (_currentPage - 1) * _rowsPerPage;
+    final endIndex = (startIndex + _rowsPerPage < totalItems)
+        ? startIndex + _rowsPerPage
+        : totalItems;
+
+    // Ensure startIndex is valid
+    if (startIndex >= totalItems && totalItems > 0) {
+      // Reset to first page if current page is out of bounds
+      // This can happen when switching tabs
+      // Ideally we should manage page state per tab or reset on tab switch
+      // For now, just show empty or handle gracefully
+      // But better to reset _currentPage in build or listener
+    }
+
+    final paginatedOrders = (startIndex < totalItems)
+        ? orders.sublist(startIndex, endIndex)
+        : <Order>[];
+
     return Column(
       children: [
         Expanded(
           child: Responsive.isMobile(context)
-              ? _buildMobileList()
-              : _buildDataTable(),
+              ? _buildMobileList(paginatedOrders)
+              : _buildDataTable(paginatedOrders),
         ),
-        PaginationControls(
-          currentPage: _currentPage,
-          totalPages: (mockOrders.length / _rowsPerPage).ceil(),
-          rowsPerPage: _rowsPerPage,
-          totalItems: mockOrders.length,
-          onPageChanged: (page) {
-            setState(() {
-              _currentPage = page;
-            });
-          },
-          onRowsPerPageChanged: (rows) {
-            setState(() {
-              _rowsPerPage = rows;
-              _currentPage = 1;
-            });
-          },
-        ),
+        if (orders.isNotEmpty)
+          PaginationControls(
+            currentPage: _currentPage,
+            totalPages: totalPages > 0 ? totalPages : 1,
+            rowsPerPage: _rowsPerPage,
+            totalItems: totalItems,
+            onPageChanged: (page) {
+              setState(() {
+                _currentPage = page;
+              });
+            },
+            onRowsPerPageChanged: (rows) {
+              setState(() {
+                _rowsPerPage = rows;
+                _currentPage = 1;
+              });
+            },
+          ),
       ],
     );
   }
 
-  Widget _buildMobileList() {
+  Widget _buildMobileList(List<Order> orders) {
     return ListView.builder(
       padding: const EdgeInsets.all(AppDimensions.spacing8),
-      itemCount: mockOrders.length,
+      itemCount: orders.length,
       itemBuilder: (context, index) {
-        final order = mockOrders[index];
+        final order = orders[index];
         return CustomCard(
+          onTap: () => Navigator.of(
+            context,
+          ).pushNamed(Routes.orderDetails, arguments: order.id),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -144,7 +184,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                 children: [
                   Expanded(
                     child: Text(
-                      order['eventName'],
+                      order.eventName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -152,8 +192,8 @@ class _OrderListScreenState extends State<OrderListScreen>
                     ),
                   ),
                   StatusBadge(
-                    label: order['status'].toString().toUpperCase(),
-                    type: StatusType.inProgress,
+                    label: order.status.toUpperCase(),
+                    type: _getStatusType(order.status),
                     small: true,
                   ),
                 ],
@@ -167,10 +207,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                     color: AppColors.textSecondary,
                   ),
                   const SizedBox(width: AppDimensions.spacing4),
-                  Text(
-                    order['clientName'],
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Text(order.clientName, style: const TextStyle(fontSize: 14)),
                 ],
               ),
               const SizedBox(height: AppDimensions.spacing4),
@@ -183,7 +220,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                   ),
                   const SizedBox(width: AppDimensions.spacing4),
                   Text(
-                    order['eventDate'],
+                    DateFormat('MMM dd, yyyy').format(order.eventDate),
                     style: const TextStyle(fontSize: 14),
                   ),
                 ],
@@ -199,7 +236,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                   const SizedBox(width: AppDimensions.spacing4),
                   Expanded(
                     child: Text(
-                      order['venue'],
+                      order.venue,
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
@@ -210,7 +247,11 @@ class _OrderListScreenState extends State<OrderListScreen>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(
+                        context,
+                      ).pushNamed(Routes.orderDetails, arguments: order.id);
+                    },
                     child: const Text('View Details'),
                   ),
                 ],
@@ -222,7 +263,7 @@ class _OrderListScreenState extends State<OrderListScreen>
     );
   }
 
-  Widget _buildDataTable() {
+  Widget _buildDataTable(List<Order> orders) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppDimensions.spacing16),
       child: Card(
@@ -238,18 +279,47 @@ class _OrderListScreenState extends State<OrderListScreen>
               DataColumn(label: Text('Status')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: mockOrders.map((order) {
+            rows: orders.map((order) {
               return DataRow(
                 cells: [
-                  DataCell(Text(order['id'])),
-                  DataCell(Text(order['clientName'])),
-                  DataCell(Text(order['eventName'])),
-                  DataCell(Text(order['eventDate'])),
-                  DataCell(Text(order['venue'])),
+                  DataCell(Text(order.id)),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        order.clientName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 150,
+                      child: Text(
+                        order.eventName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(DateFormat('MMM dd, yyyy').format(order.eventDate)),
+                  ),
+                  DataCell(
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        order.venue,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   DataCell(
                     StatusBadge(
-                      label: order['status'].toString().toUpperCase(),
-                      type: StatusType.inProgress,
+                      label: order.status.toUpperCase(),
+                      type: _getStatusType(order.status),
                       small: true,
                     ),
                   ),
@@ -259,12 +329,21 @@ class _OrderListScreenState extends State<OrderListScreen>
                       children: [
                         IconButton(
                           icon: const Icon(Icons.visibility_outlined, size: 20),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(
+                              Routes.orderDetails,
+                              arguments: order.id,
+                            );
+                          },
                           tooltip: 'View',
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 20),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(Routes.orderForm, arguments: order);
+                          },
                           tooltip: 'Edit',
                         ),
                       ],
@@ -277,5 +356,20 @@ class _OrderListScreenState extends State<OrderListScreen>
         ),
       ),
     );
+  }
+
+  StatusType _getStatusType(String status) {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return StatusType.success;
+      case 'pending':
+        return StatusType.pending;
+      case 'completed':
+        return StatusType.success;
+      case 'cancelled':
+        return StatusType.failed;
+      default:
+        return StatusType.pending;
+    }
   }
 }

@@ -33,6 +33,28 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Forgot password method (placeholder for future implementation)
+  Future<bool> forgotPassword(String email) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Mock success - in real app, this would send reset email
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to send reset email. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Logout method
   Future<void> logout() async {
     _isAuthenticated = false;
