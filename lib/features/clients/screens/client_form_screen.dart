@@ -83,84 +83,102 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppDimensions.spacing16),
           children: [
-            _buildSectionTitle('Client Information'),
-            CustomTextField(
-              label: 'Full Name',
-              controller: _fullNameController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.person_outline),
-              hint: 'e.g., Rajesh & Priya',
-            ),
-            const SizedBox(height: 24),
+            _buildSectionCard('Client Information', [
+              CustomTextField(
+                label: 'Full Name',
+                controller: _fullNameController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.person_outline),
+                hint: 'e.g., Rajesh & Priya',
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
 
-            _buildSectionTitle('Contact Details'),
-            CustomTextField(
-              label: 'WhatsApp Number',
-              controller: _whatsappController,
-              keyboardType: TextInputType.phone,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.phone_outlined),
-              hint: '+91 XXXXX XXXXX',
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Alternate Number',
-              controller: _alternateNumberController,
-              keyboardType: TextInputType.phone,
-              prefixIcon: const Icon(Icons.phone_android_outlined),
-              hint: 'Optional',
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Email',
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              prefixIcon: const Icon(Icons.email_outlined),
-              hint: 'Optional',
-            ),
-            const SizedBox(height: 24),
+            _buildSectionCard('Contact Details', [
+              CustomTextField(
+                label: 'WhatsApp Number',
+                controller: _whatsappController,
+                keyboardType: TextInputType.phone,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.phone_outlined),
+                hint: '+91 XXXXX XXXXX',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Alternate Number',
+                controller: _alternateNumberController,
+                keyboardType: TextInputType.phone,
+                prefixIcon: const Icon(Icons.phone_android_outlined),
+                hint: 'Optional',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Email',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: const Icon(Icons.email_outlined),
+                hint: 'Optional',
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
 
-            _buildSectionTitle('Source & Details'),
-            CustomTextField(
-              label: 'Source',
-              controller: _sourceController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.source_outlined),
-              hint: 'e.g., Referral, Facebook, Instagram',
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Created By',
-              controller: _createdByController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.person_add_outlined),
-              hint: 'Your name or user ID',
-            ),
-            const SizedBox(height: 24),
+            _buildSectionCard('Source & Details', [
+              CustomTextField(
+                label: 'Source',
+                controller: _sourceController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.source_outlined),
+                hint: 'e.g., Referral, Facebook, Instagram',
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Created By',
+                controller: _createdByController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.person_add_outlined),
+                hint: 'Your name or user ID',
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
 
-            _buildSectionTitle('Additional Notes'),
-            CustomTextField(
-              label: 'Notes',
-              controller: _notesController,
-              maxLines: 3,
-              prefixIcon: const Icon(Icons.note_outlined),
-              hint: 'Optional notes about the client',
-            ),
+            _buildSectionCard('Additional Notes', [
+              CustomTextField(
+                label: 'Notes',
+                controller: _notesController,
+                maxLines: 3,
+                prefixIcon: const Icon(Icons.note_outlined),
+                hint: 'Optional notes about the client',
+              ),
+            ]),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+  Widget _buildSectionCard(String title, List<Widget> children) {
+    return Card(
+      elevation: AppDimensions.elevation1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacing16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spacing16),
+            ...children,
+          ],
         ),
       ),
     );

@@ -64,40 +64,46 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  // Mobile Layout - Full screen form
+  // Mobile Layout - Centered card
   Widget _buildMobileLayout() {
     return SafeArea(
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppDimensions.spacing24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon
-              Icon(
-                Icons.lock_reset,
-                size: AppDimensions.iconXXLarge * 2,
-                color: AppColors.primary,
-              ),
-              const SizedBox(height: AppDimensions.spacing16),
-              Text(
-                'Reset Your Password',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppDimensions.spacing16),
-              Text(
-                'Enter your email address and we\'ll send you a link to reset your password.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppDimensions.spacing48),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Padding(
+              padding: const EdgeInsets.all(AppDimensions.spacing24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Icon
+                  Icon(
+                    Icons.lock_reset,
+                    size: AppDimensions.iconXXLarge * 2,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(height: AppDimensions.spacing16),
+                  Text(
+                    'Reset Your Password',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppDimensions.spacing16),
+                  Text(
+                    'Enter your email address and we\'ll send you a link to reset your password.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppDimensions.spacing32),
 
-              // Forgot Password Form
-              _buildForgotPasswordForm(),
-            ],
+                  // Forgot Password Form
+                  _buildForgotPasswordForm(),
+                ],
+              ),
+            ),
           ),
         ),
       ),

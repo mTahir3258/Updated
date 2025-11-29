@@ -103,70 +103,76 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppDimensions.spacing16),
           children: [
-            _buildSectionTitle('Client Details'),
-            CustomTextField(
-              label: 'Client Name',
-              controller: _clientNameController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.person_outline),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Event Type',
-              controller: _eventTypeController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.event_note),
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: () async {
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: _eventDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
-                );
-                if (date != null) {
-                  setState(() => _eventDate = date);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.border),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_today,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      DateFormat('MMM dd, yyyy').format(_eventDate),
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
+            _buildSectionCard('Client Details', [
+              CustomTextField(
+                label: 'Client Name',
+                controller: _clientNameController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.person_outline),
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Event Type',
+                controller: _eventTypeController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.event_note),
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _eventDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                  );
+                  if (date != null) {
+                    setState(() => _eventDate = date);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.border),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        DateFormat('MMM dd, yyyy').format(_eventDate),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Items'),
-            ..._items.asMap().entries.map(
-              (entry) => _buildItemRow(entry.key, entry.value),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: _addItem,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Item'),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.all(16),
-                side: const BorderSide(color: AppColors.primary),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
+
+            _buildSectionCard('Items', [
+              ..._items.asMap().entries.map(
+                (entry) => _buildItemRow(entry.key, entry.value),
               ),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: _addItem,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Item'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                  side: const BorderSide(color: AppColors.primary),
+                ),
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
+
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -201,15 +207,25 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+  Widget _buildSectionCard(String title, List<Widget> children) {
+    return Card(
+      elevation: AppDimensions.elevation1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacing16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spacing16),
+            ...children,
+          ],
         ),
       ),
     );

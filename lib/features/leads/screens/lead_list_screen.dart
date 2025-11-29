@@ -143,11 +143,7 @@ class _LeadListScreenState extends State<LeadListScreen> {
                           Navigator.of(context).pushNamed(Routes.leadForm);
                         },
                       )
-                    : Responsive(
-                        mobile: _buildMobileList(paginatedLeads),
-                        tablet: _buildDataTable(paginatedLeads),
-                        desktop: _buildDataTable(paginatedLeads),
-                      ),
+                    : _buildMobileList(paginatedLeads),
               ),
               if (filteredLeads.isNotEmpty)
                 PaginationControls(

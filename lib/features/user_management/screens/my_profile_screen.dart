@@ -86,8 +86,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             _buildPersonalInfoSection(),
             const SizedBox(height: AppDimensions.spacing16),
             _buildChangePasswordSection(),
-            const SizedBox(height: AppDimensions.spacing16),
-            _buildNotificationPreferences(),
             const SizedBox(height: AppDimensions.spacing24),
             _buildLogoutButton(),
           ],
@@ -97,73 +95,79 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget _buildProfileHeader() {
-    return CustomCard(
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spacing24),
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundColor: AppColors.primary,
-                  child: Text(
-                    'A',
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (_isEditing)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.white,
-                      child: IconButton(
-                        icon: const Icon(Icons.camera_alt, size: 18),
-                        onPressed: () {
-                          // TODO: Implement image picker
-                        },
+    return SizedBox(
+      width: double.infinity,
+      child: CustomCard(
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.spacing24),
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundColor: AppColors.primary,
+                    child: Text(
+                      'A',
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-              ],
-            ),
-            const SizedBox(height: AppDimensions.spacing16),
-            Text(
-              '${_firstNameController.text} ${_lastNameController.text}',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _emailController.text,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                  if (_isEditing)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Colors.white,
+                        child: IconButton(
+                          icon: const Icon(Icons.camera_alt, size: 18),
+                          onPressed: () {
+                            // TODO: Implement image picker
+                          },
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              child: const Text(
-                'Administrator',
-                style: TextStyle(
-                  color: AppColors.primary,
+              const SizedBox(height: AppDimensions.spacing16),
+              Text(
+                '${_firstNameController.text} ${_lastNameController.text}',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                _emailController.text,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Text(
+                  'Administrator',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

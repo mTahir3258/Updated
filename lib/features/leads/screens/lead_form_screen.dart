@@ -85,116 +85,131 @@ class _LeadFormScreenState extends State<LeadFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppDimensions.spacing16),
           children: [
-            _buildSectionTitle('Personal Details'),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    label: 'First Name',
-                    controller: _firstNameController,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.person_outline),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomTextField(
-                    label: 'Last Name',
-                    controller: _lastNameController,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.person_outline),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Email',
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.email_outlined),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    label: 'Phone',
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomTextField(
-                    label: 'WhatsApp',
-                    controller: _whatsappController,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.message_outlined),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Address',
-              controller: _addressController,
-              maxLines: 2,
-              prefixIcon: const Icon(Icons.location_on_outlined),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle('Lead Details'),
-            CustomTextField(
-              label: 'Source',
-              controller: _sourceController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.source_outlined),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _status,
-              decoration: const InputDecoration(
-                labelText: 'Status',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.flag_outlined),
-              ),
-              items: ['new', 'in_progress', 'success', 'failed']
-                  .map(
-                    (s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.toUpperCase()),
+            _buildSectionCard('Personal Details', [
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'First Name',
+                      controller: _firstNameController,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.person_outline),
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _status = value);
-                }
-              },
-            ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Last Name',
+                      controller: _lastNameController,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.person_outline),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Email',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.email_outlined),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Phone',
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.phone_outlined),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'WhatsApp',
+                      controller: _whatsappController,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.message_outlined),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Address',
+                controller: _addressController,
+                maxLines: 2,
+                prefixIcon: const Icon(Icons.location_on_outlined),
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
+
+            _buildSectionCard('Lead Details', [
+              CustomTextField(
+                label: 'Source',
+                controller: _sourceController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.source_outlined),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _status,
+                decoration: const InputDecoration(
+                  labelText: 'Status',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.flag_outlined),
+                ),
+                items: ['new', 'in_progress', 'success', 'failed']
+                    .map(
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(s.toUpperCase()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _status = value);
+                  }
+                },
+              ),
+            ]),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+  Widget _buildSectionCard(String title, List<Widget> children) {
+    return Card(
+      elevation: AppDimensions.elevation1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacing16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spacing16),
+            ...children,
+          ],
         ),
       ),
     );

@@ -132,11 +132,7 @@ class _ClientListScreenState extends State<ClientListScreen> {
                         onActionPressed: () =>
                             Navigator.of(context).pushNamed(Routes.clientForm),
                       )
-                    : Responsive(
-                        mobile: _buildMobileList(paginatedClients),
-                        tablet: _buildDataTable(paginatedClients),
-                        desktop: _buildDataTable(paginatedClients),
-                      ),
+                    : _buildMobileList(paginatedClients),
               ),
               if (filteredClients.isNotEmpty)
                 PaginationControls(

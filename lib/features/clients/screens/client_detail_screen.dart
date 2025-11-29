@@ -24,157 +24,117 @@ class ClientDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Modern gradient app bar
-          SliverAppBar(
-            expandedHeight: 220,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                client.fullName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 2, color: Colors.black26)],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.success, Color(0xFF2E7D32)],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -30,
-                    bottom: -30,
-                    child: Icon(
-                      Icons.people,
-                      size: 200,
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  const PopupMenuItem(child: Text('Create Order')),
-                  const PopupMenuItem(child: Text('Send Message')),
-                  const PopupMenuItem(child: Text('Delete')),
-                ],
-              ),
+      appBar: AppBar(
+        title: Text(client.fullName),
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
+        actions: [
+          IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(child: Text('Create Order')),
+              const PopupMenuItem(child: Text('Send Message')),
+              const PopupMenuItem(child: Text('Delete')),
             ],
           ),
-
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Contact Information Card
-                _buildModernCard(
-                  title: 'Contact Information',
-                  icon: Icons.contact_phone,
-                  iconColor: AppColors.primary,
-                  child: Column(
-                    children: [
-                      _buildContactRow(
-                        Icons.chat,
-                        'WhatsApp',
-                        client.whatsappNumber,
-                        isPrimary: true,
-                      ),
-                      if (client.alternateNumber != null)
-                        _buildContactRow(
-                          Icons.phone,
-                          'Alternate',
-                          client.alternateNumber!,
-                        ),
-                      if (client.email != null)
-                        _buildContactRow(Icons.email, 'Email', client.email!),
-                      const Divider(height: 32),
-                      _buildInfoRow('Source', client.source),
-                      _buildInfoRow('Created By', client.createdBy),
-                      _buildInfoRow(
-                        'Created Date',
-                        '${client.createdDate.day}/${client.createdDate.month}/${client.createdDate.year}',
-                      ),
-                    ],
-                  ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Contact Information Card
+          _buildModernCard(
+            title: 'Contact Information',
+            icon: Icons.contact_phone,
+            iconColor: AppColors.primary,
+            child: Column(
+              children: [
+                _buildContactRow(
+                  Icons.chat,
+                  'WhatsApp',
+                  client.whatsappNumber,
+                  isPrimary: true,
                 ),
-
-                const SizedBox(height: 16),
-
-                // Contact Persons Card
-                _buildModernCard(
-                  title: 'Contact Persons',
-                  icon: Icons.people_alt,
-                  iconColor: AppColors.secondary,
-                  action: TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('Add Contact'),
+                if (client.alternateNumber != null)
+                  _buildContactRow(
+                    Icons.phone,
+                    'Alternate',
+                    client.alternateNumber!,
                   ),
-                  child: client.contactPersons.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              'No contact persons added',
-                              style: TextStyle(color: AppColors.textSecondary),
-                            ),
-                          ),
-                        )
-                      : Column(
-                          children: client.contactPersons
-                              .map((person) => _buildContactPersonTile(person))
-                              .toList(),
-                        ),
+                if (client.email != null)
+                  _buildContactRow(Icons.email, 'Email', client.email!),
+                const Divider(height: 32),
+                _buildInfoRow('Source', client.source),
+                _buildInfoRow('Created By', client.createdBy),
+                _buildInfoRow(
+                  'Created Date',
+                  '${client.createdDate.day}/${client.createdDate.month}/${client.createdDate.year}',
                 ),
-
-                const SizedBox(height: 16),
-
-                // Orders History
-                _buildModernCard(
-                  title: 'Orders History',
-                  icon: Icons.shopping_cart,
-                  iconColor: AppColors.warning,
-                  action: TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('New Order'),
-                  ),
-                  child: const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.shopping_cart_outlined,
-                            size: 48,
-                            color: AppColors.textSecondary,
-                          ),
-                          SizedBox(height: 8),
-                          Text('No orders yet'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 80),
-              ]),
+              ],
             ),
           ),
+
+          const SizedBox(height: 16),
+
+          // Contact Persons Card
+          _buildModernCard(
+            title: 'Contact Persons',
+            icon: Icons.people_alt,
+            iconColor: AppColors.secondary,
+            action: TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('Add Contact'),
+            ),
+            child: client.contactPersons.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        'No contact persons added',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: client.contactPersons
+                        .map((person) => _buildContactPersonTile(person))
+                        .toList(),
+                  ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Orders History
+          _buildModernCard(
+            title: 'Orders History',
+            icon: Icons.shopping_cart,
+            iconColor: AppColors.warning,
+            action: TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.add, size: 16),
+              label: const Text('New Order'),
+            ),
+            child: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 48,
+                      color: AppColors.textSecondary,
+                    ),
+                    SizedBox(height: 8),
+                    Text('No orders yet'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 80),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 /// App color constants following the design system
 class AppColors {
   // Primary Colors
-  static const Color primary = Color(0xFF1976D2); // Blue
+  // static const Color primary = Color(0xFF1976D2); // Blue
   static const Color primaryLight = Color(0xFFBBDEFB);
   static const Color primaryDark = Color(0xFF0D47A1);
+  static const Color primary = Color(0xff0000FF);
 
   // Secondary Colors
   static const Color secondary = Color(0xFFFFA726); // Orange

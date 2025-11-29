@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: AppDimensions.spacing16),
               Text(
                 'Event Management',
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: AppDimensions.spacing48),
 
@@ -93,73 +93,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Desktop Layout - Split screen
+  // Desktop Layout - Centered card
   Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        // Promotional Section (Left)
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.primaryDark],
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.event_available,
-                    size: 120,
-                    color: AppColors.textOnPrimary,
-                  ),
-                  const SizedBox(height: AppDimensions.spacing24),
-                  Text(
-                    'Event Management System',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: AppColors.textOnPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppDimensions.spacing16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.spacing48,
-                    ),
-                    child: Text(
-                      'Manage your events, leads, clients, and teams all in one place',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textOnPrimary.withOpacity(0.9),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // Login Form (Right)
-        Expanded(
-          child: Container(
-            color: AppColors.background,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppDimensions.spacing48),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: _buildLoginForm(),
+    return Container(
+      color: AppColors.background,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimensions.spacing48),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Icon(
+                  Icons.event_available_outlined,
+                  size: AppDimensions.iconXXLarge * 2,
+                  color: AppColors.primary,
                 ),
-              ),
+                const SizedBox(height: AppDimensions.spacing16),
+                Text(
+                  'Event Management',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+                const SizedBox(height: AppDimensions.spacing48),
+
+                // Login Form
+                _buildLoginForm(),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -182,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Text(
                     'Sign In',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppDimensions.spacing24),
@@ -223,6 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Sign In Button
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
                     onPressed: _handleLogin,
                     child: const Text('Sign In'),
                   ),
@@ -233,7 +201,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.of(context).pushNamed(Routes.forgotPassword);
                     },
-                    child: const Text('Forgot Password?'),
+
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: AppColors.primary),
+                    ),
                   ),
                 ],
               ),

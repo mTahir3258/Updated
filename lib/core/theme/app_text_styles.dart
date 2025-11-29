@@ -25,8 +25,8 @@ class AppTextStyles {
 
   // Headline Styles
   static const TextStyle headlineLarge = TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.w400,
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 

@@ -140,11 +140,7 @@ class _OrderListScreenState extends State<OrderListScreen>
 
     return Column(
       children: [
-        Expanded(
-          child: Responsive.isMobile(context)
-              ? _buildMobileList(paginatedOrders)
-              : _buildDataTable(paginatedOrders),
-        ),
+        Expanded(child: _buildMobileList(paginatedOrders)),
         if (orders.isNotEmpty)
           PaginationControls(
             currentPage: _currentPage,

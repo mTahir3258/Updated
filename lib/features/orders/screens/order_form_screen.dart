@@ -98,166 +98,186 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppDimensions.spacing16),
           children: [
-            _buildSectionTitle('Client Details'),
-            CustomTextField(
-              label: 'Client Name',
-              controller: _clientNameController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.person_outline),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Client ID',
-              controller: _clientIdController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.badge_outlined),
-            ),
-            const SizedBox(height: 24),
+            _buildSectionCard('Client Details', [
+              CustomTextField(
+                label: 'Client Name',
+                controller: _clientNameController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.person_outline),
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Client ID',
+                controller: _clientIdController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.badge_outlined),
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
 
-            _buildSectionTitle('Event Details'),
-            CustomTextField(
-              label: 'Event Name',
-              controller: _eventNameController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.event_outlined),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Event Type',
-              controller: _eventTypeController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.category_outlined),
-              hint: 'e.g., Wedding, Birthday, Corporate',
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: _selectEventDate,
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: 'Event Date',
-                  border: const OutlineInputBorder(),
-                  prefixIcon: const Icon(Icons.calendar_today_outlined),
-                  errorText: _eventDate == null ? 'Required' : null,
-                ),
-                child: Text(
-                  _eventDate == null
-                      ? 'Select date'
-                      : '${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
-                  style: TextStyle(
-                    color: _eventDate == null
-                        ? AppColors.textSecondary
-                        : AppColors.textPrimary,
+            _buildSectionCard('Event Details', [
+              CustomTextField(
+                label: 'Event Name',
+                controller: _eventNameController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.event_outlined),
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Event Type',
+                controller: _eventTypeController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.category_outlined),
+                hint: 'e.g., Wedding, Birthday, Corporate',
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: _selectEventDate,
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Event Date',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
+                    errorText: _eventDate == null ? 'Required' : null,
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Venue',
-              controller: _venueController,
-              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-              prefixIcon: const Icon(Icons.location_on_outlined),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 24),
-
-            _buildSectionTitle('Order Status'),
-            DropdownButtonFormField<String>(
-              value: _status,
-              decoration: const InputDecoration(
-                labelText: 'Order Status',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.flag_outlined),
-              ),
-              items: ['confirmed', 'pending', 'cancelled', 'completed']
-                  .map(
-                    (s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.toUpperCase()),
+                  child: Text(
+                    _eventDate == null
+                        ? 'Select date'
+                        : '${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
+                    style: TextStyle(
+                      color: _eventDate == null
+                          ? AppColors.textSecondary
+                          : AppColors.textPrimary,
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _status = value);
-                }
-              },
-            ),
-            const SizedBox(height: 24),
-
-            _buildSectionTitle('Payment Details'),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    label: 'Total Amount',
-                    controller: _totalAmountController,
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.currency_rupee),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomTextField(
-                    label: 'Paid Amount',
-                    controller: _paidAmountController,
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Required' : null,
-                    prefixIcon: const Icon(Icons.payment_outlined),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _paymentStatus,
-              decoration: const InputDecoration(
-                labelText: 'Payment Status',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_balance_wallet_outlined),
               ),
-              items: ['paid', 'partial', 'pending', 'overdue']
-                  .map(
-                    (s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.toUpperCase()),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _paymentStatus = value);
-                }
-              },
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Venue',
+                controller: _venueController,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                prefixIcon: const Icon(Icons.location_on_outlined),
+                maxLines: 2,
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
 
-            _buildSectionTitle('Additional Notes'),
-            CustomTextField(
-              label: 'Notes',
-              controller: _notesController,
-              maxLines: 3,
-              prefixIcon: const Icon(Icons.note_outlined),
-              hint: 'Optional notes about the order',
-            ),
+            _buildSectionCard('Order Status', [
+              DropdownButtonFormField<String>(
+                value: _status,
+                decoration: const InputDecoration(
+                  labelText: 'Order Status',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.flag_outlined),
+                ),
+                items: ['confirmed', 'pending', 'cancelled', 'completed']
+                    .map(
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(s.toUpperCase()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _status = value);
+                  }
+                },
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
+
+            _buildSectionCard('Payment Details', [
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Total Amount',
+                      controller: _totalAmountController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.currency_rupee),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Paid Amount',
+                      controller: _paidAmountController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Required' : null,
+                      prefixIcon: const Icon(Icons.payment_outlined),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _paymentStatus,
+                decoration: const InputDecoration(
+                  labelText: 'Payment Status',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+                ),
+                items: ['paid', 'partial', 'pending', 'overdue']
+                    .map(
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(s.toUpperCase()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _paymentStatus = value);
+                  }
+                },
+              ),
+            ]),
+            const SizedBox(height: AppDimensions.spacing16),
+
+            _buildSectionCard('Additional Notes', [
+              CustomTextField(
+                label: 'Notes',
+                controller: _notesController,
+                maxLines: 3,
+                prefixIcon: const Icon(Icons.note_outlined),
+                hint: 'Optional notes about the order',
+              ),
+            ]),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+  Widget _buildSectionCard(String title, List<Widget> children) {
+    return Card(
+      elevation: AppDimensions.elevation1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacing16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spacing16),
+            ...children,
+          ],
         ),
       ),
     );

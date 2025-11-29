@@ -349,7 +349,6 @@ class DashboardScreen extends StatelessWidget {
             title: const Text('User Management'),
             children: [
               _buildDrawerSubItem(context, title: 'Users', route: '/users'),
-              _buildDrawerSubItem(context, title: 'Roles', route: '/roles'),
             ],
           ),
           _buildDrawerItem(

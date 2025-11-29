@@ -36,7 +36,6 @@ import 'package:ui_specification/features/setup/screens/master_data_screens.dart
 import 'package:ui_specification/features/setup/screens/team_member_screen.dart';
 import 'package:ui_specification/features/user_management/providers/user_management_provider.dart';
 import 'package:ui_specification/features/user_management/screens/user_screens.dart';
-import 'package:ui_specification/features/user_management/screens/role_screens.dart';
 import 'package:ui_specification/features/communication/providers/communication_provider.dart';
 import 'package:ui_specification/features/communication/screens/communication_screens.dart';
 import 'package:ui_specification/features/user_management/screens/my_profile_screen.dart';
@@ -67,7 +66,7 @@ class MyApp extends StatelessWidget {
         title: 'Event Management',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        initialRoute: Routes.dashboard,
+        initialRoute: Routes.splash,
         routes: {
           Routes.splash: (context) => const SplashScreen(),
           Routes.login: (context) => const LoginScreen(),
@@ -120,7 +119,6 @@ class MyApp extends StatelessWidget {
 
           // User Management Routes
           Routes.users: (context) => const UserListScreen(),
-          Routes.roles: (context) => const RoleListScreen(),
 
           // Communication Routes
           Routes.messageList: (context) => const MessageListScreen(),

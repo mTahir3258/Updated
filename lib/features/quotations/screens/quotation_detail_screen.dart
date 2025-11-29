@@ -16,7 +16,8 @@ class QuotationDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final id =
-        quotationId ?? ModalRoute.of(context)!.settings.arguments as String;
+        quotationId ??
+        (ModalRoute.of(context)!.settings.arguments as String? ?? '');
     final quotation = context.watch<QuotationProvider>().getQuotationById(id);
 
     if (quotation == null) {
@@ -348,6 +349,7 @@ class QuotationDetailScreen extends StatelessWidget {
 
   Widget _buildTermsCard() {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,

@@ -14,7 +14,9 @@ class OrderDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final id = orderId ?? ModalRoute.of(context)!.settings.arguments as String;
+    final id =
+        orderId ??
+        (ModalRoute.of(context)!.settings.arguments as String? ?? '');
     final order = context.read<OrderProvider>().getOrderById(id);
 
     if (order == null) {
@@ -28,229 +30,178 @@ class OrderDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Modern App Bar
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                order.eventName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(blurRadius: 2, color: Colors.black26)],
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      _getStatusColor(order.status),
-                      _getStatusColor(order.status).withOpacity(0.7),
-                    ],
-                  ),
-                ),
-                child: Stack(
+      appBar: AppBar(
+        title: Text(order.eventName),
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              Navigator.pushNamed(context, Routes.orderForm, arguments: order);
+            },
+          ),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(child: Text('Send Reminder')),
+              const PopupMenuItem(child: Text('Cancel Order')),
+            ],
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Order Summary Card
+          _buildGradientCard(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withOpacity(0.1),
+                AppColors.primaryLight,
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Positioned(
-                      right: -40,
-                      top: -40,
-                      child: Icon(
-                        Icons.event,
-                        size: 180,
-                        color: Colors.white.withOpacity(0.1),
+                    const Icon(Icons.info_outline, color: AppColors.primary),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Order Summary',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    StatusBadge(
+                      label: order.status.toUpperCase(),
+                      type: _getStatusBadge(order.status),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _buildSummaryRow('Order ID', order.id),
+                _buildSummaryRow('Client', order.clientName),
+                _buildSummaryRow('Event Type', order.eventType),
+                _buildSummaryRow(
+                  'Event Date',
+                  DateFormat('dd MMM yyyy').format(order.eventDate),
+                ),
+                _buildSummaryRow('Venue', order.venue),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Payment Card
+          _buildModernCard(
+            title: 'Payment Details',
+            icon: Icons.payment,
+            iconColor: _getPaymentColor(order.paymentStatus),
+            child: Column(
+              children: [
+                // Payment Progress Bar
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Payment Progress'),
+                        Text(
+                          '${(order.paymentProgress * 100).toInt()}%',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: order.paymentProgress,
+                        minHeight: 12,
+                        backgroundColor: AppColors.surfaceDim,
+                        valueColor: AlwaysStoppedAnimation(
+                          _getPaymentColor(order.paymentStatus),
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    Routes.orderForm,
-                    arguments: order,
-                  );
-                },
-              ),
-              PopupMenuButton(
-                itemBuilder: (context) => [
-                  const PopupMenuItem(child: Text('Send Reminder')),
-                  const PopupMenuItem(child: Text('Cancel Order')),
-                ],
-              ),
-            ],
-          ),
-
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Order Summary Card
-                _buildGradientCard(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primary.withOpacity(0.1),
-                      AppColors.primaryLight,
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.info_outline,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Order Summary',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const Spacer(),
-                          StatusBadge(
-                            label: order.status.toUpperCase(),
-                            type: _getStatusBadge(order.status),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _buildSummaryRow('Order ID', order.id),
-                      _buildSummaryRow('Client', order.clientName),
-                      _buildSummaryRow('Event Type', order.eventType),
-                      _buildSummaryRow(
-                        'Event Date',
-                        DateFormat('dd MMM yyyy').format(order.eventDate),
-                      ),
-                      _buildSummaryRow('Venue', order.venue),
-                    ],
-                  ),
+                const Divider(height: 32),
+                _buildPaymentRow(
+                  'Total Amount',
+                  currencyFormat.format(order.totalAmount),
                 ),
-
+                _buildPaymentRow(
+                  'Paid Amount',
+                  currencyFormat.format(order.paidAmount),
+                  color: AppColors.success,
+                ),
+                _buildPaymentRow(
+                  'Pending Amount',
+                  currencyFormat.format(order.remainingAmount),
+                  color: AppColors.error,
+                ),
                 const SizedBox(height: 16),
-
-                // Payment Card
-                _buildModernCard(
-                  title: 'Payment Details',
-                  icon: Icons.payment,
-                  iconColor: _getPaymentColor(order.paymentStatus),
-                  child: Column(
-                    children: [
-                      // Payment Progress Bar
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Payment Progress'),
-                              Text(
-                                '${(order.paymentProgress * 100).toInt()}%',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: LinearProgressIndicator(
-                              value: order.paymentProgress,
-                              minHeight: 12,
-                              backgroundColor: AppColors.surfaceDim,
-                              valueColor: AlwaysStoppedAnimation(
-                                _getPaymentColor(order.paymentStatus),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(height: 32),
-                      _buildPaymentRow(
-                        'Total Amount',
-                        currencyFormat.format(order.totalAmount),
-                      ),
-                      _buildPaymentRow(
-                        'Paid Amount',
-                        currencyFormat.format(order.paidAmount),
-                        color: AppColors.success,
-                      ),
-                      _buildPaymentRow(
-                        'Pending Amount',
-                        currencyFormat.format(order.remainingAmount),
-                        color: AppColors.error,
-                      ),
-                      const SizedBox(height: 16),
-                      StatusBadge(
-                        label: order.paymentStatus.toUpperCase(),
-                        type: _getPaymentStatusBadge(order.paymentStatus),
-                      ),
-                    ],
-                  ),
+                StatusBadge(
+                  label: order.paymentStatus.toUpperCase(),
+                  type: _getPaymentStatusBadge(order.paymentStatus),
                 ),
-
-                const SizedBox(height: 16),
-
-                // Services & Team Assignment
-                _buildModernCard(
-                  title: 'Services & Team',
-                  icon: Icons.people_alt,
-                  iconColor: AppColors.secondary,
-                  child: order.services.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text('No services assigned'),
-                          ),
-                        )
-                      : Column(
-                          children: order.services
-                              .map((service) => _buildServiceTile(service))
-                              .toList(),
-                        ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Payment History
-                _buildModernCard(
-                  title: 'Payment History',
-                  icon: Icons.history,
-                  iconColor: AppColors.success,
-                  child: order.payments.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text('No payments received'),
-                          ),
-                        )
-                      : Column(
-                          children: order.payments
-                              .map(
-                                (payment) => _buildPaymentHistoryTile(
-                                  payment,
-                                  currencyFormat,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                ),
-
-                const SizedBox(height: 80),
-              ]),
+              ],
             ),
           ),
+
+          const SizedBox(height: 16),
+
+          // Services & Team Assignment
+          _buildModernCard(
+            title: 'Services & Team',
+            icon: Icons.people_alt,
+            iconColor: AppColors.secondary,
+            child: order.services.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text('No services assigned'),
+                    ),
+                  )
+                : Column(
+                    children: order.services
+                        .map((service) => _buildServiceTile(service))
+                        .toList(),
+                  ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Payment History
+          _buildModernCard(
+            title: 'Payment History',
+            icon: Icons.history,
+            iconColor: AppColors.success,
+            child: order.payments.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text('No payments received'),
+                    ),
+                  )
+                : Column(
+                    children: order.payments
+                        .map(
+                          (payment) =>
+                              _buildPaymentHistoryTile(payment, currencyFormat),
+                        )
+                        .toList(),
+                  ),
+          ),
+
+          const SizedBox(height: 80),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
