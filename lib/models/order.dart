@@ -61,12 +61,16 @@ class Order {
       clientId: 'CLT${index.toString().padLeft(3, '0')}',
       clientMobileNumber: '+91 ${98765 + index} ${43210 + index}',
       eventName: [
-        'Wedding Ceremony',
-        'Reception',
-        'Engagement',
-        'Birthday Party',
+        'Wedding Photography Shoot',
+        'Portrait Session',
+        'Corporate Event Coverage',
+        'Engagement Shoot',
       ][index % 4],
-      eventType: ['Wedding', 'Birthday', 'Corporate'][index % 3],
+      eventType: [
+        'Wedding Photography',
+        'Portrait Session',
+        'Corporate Event',
+      ][index % 3],
       eventDate: DateTime.now().add(Duration(days: 30 + (index * 15))),
       venue: [
         'Grand Palace Hotel',
@@ -87,13 +91,13 @@ class Order {
           serviceName: 'Photography',
           teamMember: 'Rahul Sharma',
           status: 'assigned',
-          persons: 50,
+          persons: 1,
         ),
         ServiceAssignment(
-          serviceName: 'Decoration',
+          serviceName: 'Videography',
           teamMember: 'Priya Singh',
           status: 'assigned',
-          persons: 100,
+          persons: 1,
         ),
       ],
       payments: [

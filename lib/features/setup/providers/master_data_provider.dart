@@ -29,30 +29,30 @@ class MasterDataProvider extends ChangeNotifier {
       ];
 
       _eventTypes = [
-        EventType(id: '1', name: 'Wedding'),
-        EventType(id: '2', name: 'Birthday'),
-        EventType(id: '3', name: 'Corporate'),
-        EventType(id: '4', name: 'Engagement'),
+        EventType(id: '1', name: 'Wedding Photography'),
+        EventType(id: '2', name: 'Portrait Session'),
+        EventType(id: '3', name: 'Corporate Event'),
+        EventType(id: '4', name: 'Engagement Shoot'),
       ];
 
       _teamCategories = [
         TeamCategory(id: '1', name: 'Management'),
-        TeamCategory(id: '2', name: 'Decor'),
-        TeamCategory(id: '3', name: 'Catering'),
-        TeamCategory(id: '4', name: 'Photography'),
+        TeamCategory(id: '2', name: 'Photography'),
+        TeamCategory(id: '3', name: 'Videography'),
       ];
 
       _services = [
-        Service(id: '1', name: 'Catering'),
-        Service(id: '2', name: 'Decoration'),
-        Service(id: '3', name: 'Photography'),
+        Service(id: '1', name: 'Photography'),
+        Service(id: '2', name: 'Videography'),
       ];
 
       _subServices = [
-        SubService(id: '1', serviceId: '1', name: 'Buffet'),
-        SubService(id: '2', serviceId: '1', name: 'Plated'),
-        SubService(id: '3', serviceId: '2', name: 'Floral'),
-        SubService(id: '4', serviceId: '2', name: 'Lighting'),
+        SubService(id: '1', serviceId: '1', name: 'Wedding Photography'),
+        SubService(id: '2', serviceId: '1', name: 'Portrait Photography'),
+        SubService(id: '3', serviceId: '1', name: 'Event Photography'),
+        SubService(id: '4', serviceId: '2', name: 'Wedding Videography'),
+        SubService(id: '5', serviceId: '2', name: 'Corporate Videography'),
+        SubService(id: '6', serviceId: '2', name: 'Event Videography'),
       ];
 
       _adminNotifications = [

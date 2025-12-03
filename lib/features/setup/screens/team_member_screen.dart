@@ -275,22 +275,14 @@ class _TeamMemberScreenState extends State<TeamMemberScreen> {
                       labelText: 'Category',
                       border: OutlineInputBorder(),
                     ),
-                    items:
-                        [
-                              'Photographer',
-                              'Videographer',
-                              'Decorator',
-                              'Catering',
-                              'DJ',
-                              'Transportation',
-                            ]
-                            .map(
-                              (category) => DropdownMenuItem(
-                                value: category,
-                                child: Text(category),
-                              ),
-                            )
-                            .toList(),
+                    items: ['Photographer', 'Videographer']
+                        .map(
+                          (category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         selectedCategory = value;

@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: AppDimensions.spacing24),
             Text(
-              'Event Management',
+              'Photography & Videography Services',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 color: AppColors.textOnPrimary,
                 fontWeight: FontWeight.bold,

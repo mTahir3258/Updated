@@ -61,7 +61,9 @@ class Client {
             isPrimary: false,
           ),
       ],
-      notes: index % 2 == 0 ? 'VIP client - high budget wedding' : null,
+      notes: index % 2 == 0
+          ? 'VIP client - high budget wedding photography'
+          : null,
     );
   }
 

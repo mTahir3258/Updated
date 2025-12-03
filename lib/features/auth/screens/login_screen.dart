@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: AppDimensions.spacing16),
               Text(
-                'Event Management',
+                'Photography & Videography Services',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: AppDimensions.spacing48),
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: AppDimensions.spacing16),
                 Text(
-                  'Event Management',
+                  'Photography & Videography Services',
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const SizedBox(height: AppDimensions.spacing48),

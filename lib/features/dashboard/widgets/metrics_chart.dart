@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ui_specification/core/constants/breakpoints.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/theme/app_dimensions.dart';
+import 'package:ui_specification/core/utils/responsive.dart';
 import 'package:ui_specification/core/widgets/custom_card.dart';
 
 /// Simple metrics chart widget for dashboard
@@ -27,22 +29,37 @@ class MetricsChart extends StatelessWidget {
             ? constraints.maxHeight
             : double.infinity;
 
-        // Calculate responsive dimensions based on available space
-        final isSmallScreen = availableWidth < 600;
+        // Get device type for responsive values
+        final deviceType = Responsive.getDeviceType(context);
+        final isMobile = deviceType == DeviceType.mobile;
+        final isTablet = deviceType == DeviceType.tablet;
+        final isDesktop = deviceType == DeviceType.desktop;
 
-        // Use available height minus padding and title space
-        final titleHeight = isSmallScreen
-            ? 24.0
-            : 28.0; // Estimated title height
-        final legendHeight = isSmallScreen
-            ? 40.0
-            : 50.0; // Estimated legend height
-        final padding = isSmallScreen
-            ? AppDimensions.spacing12
-            : AppDimensions.spacing16;
-        final spacing = isSmallScreen
-            ? AppDimensions.spacing12
-            : AppDimensions.spacing16;
+        // Responsive dimensions
+        final titleHeight = Responsive.value<double>(
+          context: context,
+          mobile: 24.0,
+          tablet: 26.0,
+          desktop: 28.0,
+        );
+        final legendHeight = Responsive.value<double>(
+          context: context,
+          mobile: 40.0,
+          tablet: 45.0,
+          desktop: 50.0,
+        );
+        final padding = Responsive.value<double>(
+          context: context,
+          mobile: AppDimensions.spacing12,
+          tablet: AppDimensions.spacing12,
+          desktop: AppDimensions.spacing16,
+        );
+        final spacing = Responsive.value<double>(
+          context: context,
+          mobile: AppDimensions.spacing12,
+          tablet: AppDimensions.spacing12,
+          desktop: AppDimensions.spacing16,
+        );
 
         final chartHeight = hasConstrainedHeight
             ? (availableHeight -
@@ -50,15 +67,57 @@ class MetricsChart extends StatelessWidget {
                       legendHeight -
                       (padding * 2) -
                       spacing)
-                  .clamp(100.0, availableHeight * 0.7)
-            : (isSmallScreen ? 150.0 : 200.0);
+                  .clamp(
+                    Responsive.value<double>(
+                      context: context,
+                      mobile: 80.0,
+                      tablet: 120.0,
+                      desktop: 150.0,
+                    ),
+                    availableHeight *
+                        Responsive.value<double>(
+                          context: context,
+                          mobile: 0.6,
+                          tablet: 0.7,
+                          desktop: 0.8,
+                        ),
+                  )
+            : Responsive.value<double>(
+                context: context,
+                mobile: 120.0,
+                tablet: 180.0,
+                desktop: 250.0,
+              );
 
-        // Responsive bar width based on available width
-        final barWidth = (availableWidth / data.length).clamp(16.0, 32.0);
+        // Responsive bar width based on available width and device
+        final barWidth = (availableWidth / data.length).clamp(
+          Responsive.value<double>(
+            context: context,
+            mobile: 12.0,
+            tablet: 16.0,
+            desktop: 20.0,
+          ),
+          Responsive.value<double>(
+            context: context,
+            mobile: 24.0,
+            tablet: 32.0,
+            desktop: 40.0,
+          ),
+        );
 
         // Responsive text sizes
-        final labelFontSize = isSmallScreen ? 10.0 : 12.0;
-        final titleFontSize = isSmallScreen ? 16.0 : 18.0;
+        final labelFontSize = Responsive.value<double>(
+          context: context,
+          mobile: 10.0,
+          tablet: 11.0,
+          desktop: 12.0,
+        );
+        final titleFontSize = Responsive.value<double>(
+          context: context,
+          mobile: 16.0,
+          tablet: 17.0,
+          desktop: 18.0,
+        );
 
         // Calculate max value for scaling
         final maxValue = data
@@ -93,7 +152,12 @@ class MetricsChart extends StatelessWidget {
                       final label = item['label'] as String;
                       return Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: isSmallScreen ? 4.0 : 8.0,
+                          horizontal: Responsive.value<double>(
+                            context: context,
+                            mobile: 4.0,
+                            tablet: 6.0,
+                            desktop: 8.0,
+                          ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -104,14 +168,22 @@ class MetricsChart extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: color,
                                 borderRadius: BorderRadius.circular(
-                                  isSmallScreen ? 2 : 4,
+                                  Responsive.value<double>(
+                                    context: context,
+                                    mobile: 2,
+                                    tablet: 3,
+                                    desktop: 4,
+                                  ),
                                 ),
                               ),
                             ),
                             SizedBox(
-                              height: isSmallScreen
-                                  ? AppDimensions.spacing2
-                                  : AppDimensions.spacing4,
+                              height: Responsive.value<double>(
+                                context: context,
+                                mobile: AppDimensions.spacing2,
+                                tablet: AppDimensions.spacing4,
+                                desktop: AppDimensions.spacing4,
+                              ),
                             ),
                             SizedBox(
                               width: barWidth + 10,
@@ -134,20 +206,26 @@ class MetricsChart extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: isSmallScreen
-                    ? AppDimensions.spacing6
-                    : AppDimensions.spacing8,
+                height: Responsive.value<double>(
+                  context: context,
+                  mobile: AppDimensions.spacing6,
+                  tablet: AppDimensions.spacing8,
+                  desktop: AppDimensions.spacing8,
+                ),
               ),
               Wrap(
                 alignment: WrapAlignment.center,
-                spacing: isSmallScreen
-                    ? AppDimensions.spacing12
-                    : AppDimensions.spacing16,
+                spacing: Responsive.value<double>(
+                  context: context,
+                  mobile: AppDimensions.spacing12,
+                  tablet: AppDimensions.spacing12,
+                  desktop: AppDimensions.spacing16,
+                ),
                 runSpacing: AppDimensions.spacing8,
                 children: [
-                  _buildLegend('Today', AppColors.primary, isSmallScreen),
-                  _buildLegend('Upcoming', AppColors.success, isSmallScreen),
-                  _buildLegend('This Month', AppColors.warning, isSmallScreen),
+                  _buildLegend('Today', AppColors.primary, isMobile),
+                  _buildLegend('Upcoming', AppColors.success, isMobile),
+                  _buildLegend('This Month', AppColors.warning, isMobile),
                 ],
               ),
             ],

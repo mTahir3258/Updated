@@ -154,7 +154,7 @@ class DashboardScreen extends StatelessWidget {
               Icons.calendar_today_outlined,
               'Upcoming Orders',
               '12',
-              'Events in next 30 days',
+              'Photography shoots in next 30 days',
               AppColors.primary,
               null,
               '/orders',
@@ -226,7 +226,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppDimensions.spacing8),
                 Text(
-                  'Event Management',
+                  'Photography & Videography Services',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.textOnPrimary,
                   ),
@@ -260,8 +260,8 @@ class DashboardScreen extends StatelessWidget {
           ),
           _buildDrawerItem(
             context,
-            icon: Icons.event_outlined,
-            title: 'Events',
+            icon: Icons.camera_alt,
+            title: 'Photography Shoots',
             route: '/events',
           ),
           _buildDrawerItem(

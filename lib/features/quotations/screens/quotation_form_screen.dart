@@ -25,11 +25,38 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _eventNameController;
-  late TextEditingController _teamController;
+  late TextEditingController _quotationNumberController;
   String? _selectedEventType;
   late DateTime _eventDate;
   List<QuotationItemEntry> _items = [];
   dynamic _selectedPerson; // Can be Client or Lead
+  List<Map<String, dynamic>> _selectedTeamMembers = [];
+  List<Map<String, dynamic>> _mockTeamMembers = [
+    {
+      'id': '1',
+      'name': 'Rahul Sharma',
+      'category': 'Photographer',
+      'phone': '+91 98765 43210',
+      'email': 'rahul@example.com',
+      'status': 'active',
+    },
+    {
+      'id': '2',
+      'name': 'Priya Singh',
+      'category': 'Photographer',
+      'phone': '+91 98765 43211',
+      'email': 'priya@example.com',
+      'status': 'active',
+    },
+    {
+      'id': '3',
+      'name': 'Vikram Patel',
+      'category': 'Videographer',
+      'phone': '+91 98765 43212',
+      'email': 'vikram@example.com',
+      'status': 'active',
+    },
+  ];
 
   @override
   void initState() {
@@ -43,8 +70,10 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
     _eventNameController = TextEditingController(
       text: widget.quotation?.eventName ?? '',
     );
+    _quotationNumberController = TextEditingController(
+      text: widget.quotation?.quotationNumber ?? '',
+    );
     _selectedEventType = widget.quotation?.eventType;
-    _teamController = TextEditingController(text: widget.quotation?.team ?? '');
     _eventDate =
         widget.quotation?.eventDate ??
         DateTime.now().add(const Duration(days: 7));
@@ -69,7 +98,7 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _eventNameController.dispose();
-    _teamController.dispose();
+    _quotationNumberController.dispose();
     for (var item in _items) {
       item.description.dispose();
       item.quantity.dispose();
@@ -251,36 +280,20 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
                           value?.isEmpty ?? true ? 'Required' : null,
                       items: const [
                         DropdownMenuItem(
-                          value: 'Wedding',
-                          child: Text('Wedding'),
+                          value: 'Wedding Photography',
+                          child: Text('Wedding Photography'),
                         ),
                         DropdownMenuItem(
-                          value: 'Birthday',
-                          child: Text('Birthday'),
+                          value: 'Portrait Session',
+                          child: Text('Portrait Session'),
                         ),
                         DropdownMenuItem(
-                          value: 'Corporate',
-                          child: Text('Corporate'),
+                          value: 'Corporate Event',
+                          child: Text('Corporate Event'),
                         ),
                         DropdownMenuItem(
-                          value: 'Anniversary',
-                          child: Text('Anniversary'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Engagement',
-                          child: Text('Engagement'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Baby Shower',
-                          child: Text('Baby Shower'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Graduation',
-                          child: Text('Graduation'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Retirement',
-                          child: Text('Retirement'),
+                          value: 'Engagement Shoot',
+                          child: Text('Engagement Shoot'),
                         ),
                       ],
                       onChanged: (value) {
@@ -293,9 +306,9 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: CustomTextField(
-                      label: 'Team',
-                      controller: _teamController,
-                      prefixIcon: const Icon(Icons.group),
+                      label: 'Quotation Number',
+                      controller: _quotationNumberController,
+                      prefixIcon: const Icon(Icons.receipt_long),
                     ),
                   ),
                 ],
@@ -303,10 +316,6 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Expanded(
-                    child: SizedBox(), // Empty space where commercial field was
-                  ),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: InkWell(
                       onTap: _selectEventDate,
@@ -334,6 +343,54 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
                   ),
                 ],
               ),
+
+              // Team Member Selection Section
+              const SizedBox(height: AppDimensions.spacing16),
+              _buildSectionCard('Team Assignment', [
+                Text(
+                  'Select Team Members for Quotation',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ..._mockTeamMembers.map((member) {
+                  final isSelected = _selectedTeamMembers.any(
+                    (m) => m['id'] == member['id'],
+                  );
+                  return CheckboxListTile(
+                    title: Text('${member['name']} (${member['category']})'),
+                    subtitle: Text('${member['phone']} | ${member['email']}'),
+                    value: isSelected,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == true) {
+                          _selectedTeamMembers.add(member);
+                        } else {
+                          _selectedTeamMembers.removeWhere(
+                            (m) => m['id'] == member['id'],
+                          );
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+                if (_selectedTeamMembers.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Selected Team: ${_selectedTeamMembers.map((m) => m['name']).join(", ")}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ]),
             ]),
             const SizedBox(height: AppDimensions.spacing16),
 
@@ -503,9 +560,9 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
         id:
             widget.quotation?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
-        quotationNumber:
-            widget.quotation?.quotationNumber ??
-            'Q-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}',
+        quotationNumber: _quotationNumberController.text.isEmpty
+            ? 'Q-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}'
+            : _quotationNumberController.text,
         clientId: _selectedPerson is Client
             ? _selectedPerson.id
             : 'temp_client_id',
@@ -523,7 +580,9 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
             : _eventNameController.text,
         eventType: _selectedEventType ?? '',
         eventDate: _eventDate,
-        team: _teamController.text.isEmpty ? null : _teamController.text,
+        team: _selectedTeamMembers.isEmpty
+            ? null
+            : _selectedTeamMembers.map((m) => m['name']).join(", "),
         items: items,
         status: widget.quotation?.status ?? QuotationStatus.draft,
         createdAt: widget.quotation?.createdAt ?? DateTime.now(),

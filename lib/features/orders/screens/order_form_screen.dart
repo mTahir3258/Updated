@@ -37,14 +37,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   String _paymentStatus = 'pending';
   bool _obscurePassword = true;
 
-  final List<String> _availableServices = [
-    'Wedding',
-    'Photography',
-    'Decoration',
-    'Catering',
-    'DJ',
-    'Transportation',
-  ];
+  final List<String> _availableServices = ['Photography', 'Videography'];
   late Map<String, bool> _selectedServices;
   late Map<String, TextEditingController> _personsControllers;
 

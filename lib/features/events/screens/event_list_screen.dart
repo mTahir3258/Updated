@@ -124,7 +124,7 @@ class _EventListScreenState extends State<EventListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Events'),
+        title: const Text('Photography Shoots'),
         actions: [
           IconButton(
             icon: Icon(_isCalendarView ? Icons.list : Icons.calendar_month),
@@ -147,7 +147,7 @@ class _EventListScreenState extends State<EventListScreen> {
                   Navigator.of(context).pushNamed(Routes.eventForm);
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Add Event'),
+                label: const Text('Add Photography Shoot'),
               ),
             ),
         ],
@@ -374,7 +374,7 @@ class _EventListScreenState extends State<EventListScreen> {
           child: DataTable(
             columns: const [
               DataColumn(label: Text('Date')),
-              DataColumn(label: Text('Event Name')),
+              DataColumn(label: Text('Photography Shoot')),
               DataColumn(label: Text('Client')),
               DataColumn(label: Text('Type')),
               DataColumn(label: Text('Venue')),

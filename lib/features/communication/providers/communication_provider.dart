@@ -22,7 +22,8 @@ class CommunicationProvider extends ChangeNotifier {
           id: '1',
           senderId: '2',
           receiverId: '1', // Current user
-          content: 'Hi, can you send me the quotation for the wedding event?',
+          content:
+              'Hi, can you send me the quotation for the wedding photography?',
           timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
           senderName: 'Jane Smith',
           isRead: false,

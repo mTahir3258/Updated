@@ -63,7 +63,11 @@ class _EventFormScreenState extends State<EventFormScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.event == null ? 'New Event' : 'Edit Event'),
+        title: Text(
+          widget.event == null
+              ? 'New Photography Shoot'
+              : 'Edit Photography Shoot',
+        ),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
