@@ -214,7 +214,7 @@ class _QuotationListScreenState extends State<QuotationListScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [AppColors.primary, AppColors.yellow],
         ),
       ),
       padding: const EdgeInsets.only(

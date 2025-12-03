@@ -7,6 +7,7 @@ import 'package:ui_specification/core/widgets/custom_text_field.dart';
 import 'package:ui_specification/features/quotations/providers/quotation_provider.dart';
 import 'package:ui_specification/features/clients/providers/client_provider.dart';
 import 'package:ui_specification/features/leads/providers/lead_provider.dart';
+import 'package:ui_specification/features/setup/providers/master_data_provider.dart';
 import 'package:ui_specification/models/quotation.dart';
 import 'package:ui_specification/models/client.dart';
 import 'package:ui_specification/models/lead.dart';
@@ -24,39 +25,11 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
-  late TextEditingController _eventNameController;
-  late TextEditingController _quotationNumberController;
+  late TextEditingController _teamController;
   String? _selectedEventType;
   late DateTime _eventDate;
   List<QuotationItemEntry> _items = [];
   dynamic _selectedPerson; // Can be Client or Lead
-  List<Map<String, dynamic>> _selectedTeamMembers = [];
-  List<Map<String, dynamic>> _mockTeamMembers = [
-    {
-      'id': '1',
-      'name': 'Rahul Sharma',
-      'category': 'Photographer',
-      'phone': '+91 98765 43210',
-      'email': 'rahul@example.com',
-      'status': 'active',
-    },
-    {
-      'id': '2',
-      'name': 'Priya Singh',
-      'category': 'Photographer',
-      'phone': '+91 98765 43211',
-      'email': 'priya@example.com',
-      'status': 'active',
-    },
-    {
-      'id': '3',
-      'name': 'Vikram Patel',
-      'category': 'Videographer',
-      'phone': '+91 98765 43212',
-      'email': 'vikram@example.com',
-      'status': 'active',
-    },
-  ];
 
   @override
   void initState() {
@@ -67,12 +40,7 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
     _lastNameController = TextEditingController(
       text: widget.quotation?.lastName ?? '',
     );
-    _eventNameController = TextEditingController(
-      text: widget.quotation?.eventName ?? '',
-    );
-    _quotationNumberController = TextEditingController(
-      text: widget.quotation?.quotationNumber ?? '',
-    );
+    _teamController = TextEditingController(text: widget.quotation?.team ?? '');
     _selectedEventType = widget.quotation?.eventType;
     _eventDate =
         widget.quotation?.eventDate ??
@@ -82,7 +50,7 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
       _items = widget.quotation!.items
           .map(
             (item) => QuotationItemEntry(
-              description: TextEditingController(text: item.description),
+              selectedPackageId: null, // TODO: find by name
               quantity: TextEditingController(text: item.quantity.toString()),
               price: TextEditingController(text: item.unitPrice.toString()),
             ),
@@ -97,10 +65,8 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _eventNameController.dispose();
-    _quotationNumberController.dispose();
+    _teamController.dispose();
     for (var item in _items) {
-      item.description.dispose();
       item.quantity.dispose();
       item.price.dispose();
     }
@@ -111,7 +77,7 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
     setState(() {
       _items.add(
         QuotationItemEntry(
-          description: TextEditingController(),
+          selectedPackageId: null,
           quantity: TextEditingController(text: '1'),
           price: TextEditingController(text: '0'),
         ),
@@ -246,72 +212,44 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Last Name',
-                      controller: _lastNameController,
-                      prefixIcon: const Icon(Icons.person_outline),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Event Name',
-                      controller: _eventNameController,
-                      prefixIcon: const Icon(Icons.event_outlined),
-                    ),
-                  ),
-                ],
+              CustomTextField(
+                label: 'Second Name',
+                controller: _lastNameController,
+                prefixIcon: const Icon(Icons.person_outline),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedEventType,
-                      decoration: const InputDecoration(
-                        labelText: 'Event Type',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.event_note),
-                      ),
-                      validator: (value) =>
-                          value?.isEmpty ?? true ? 'Required' : null,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'Wedding Photography',
-                          child: Text('Wedding Photography'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Portrait Session',
-                          child: Text('Portrait Session'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Corporate Event',
-                          child: Text('Corporate Event'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Engagement Shoot',
-                          child: Text('Engagement Shoot'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedEventType = value;
-                        });
-                      },
-                    ),
+              DropdownButtonFormField<String>(
+                value: _selectedEventType,
+                decoration: const InputDecoration(
+                  labelText: 'Event Type',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.event_note),
+                ),
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'Wedding Photography',
+                    child: Text('Wedding Photography'),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Quotation Number',
-                      controller: _quotationNumberController,
-                      prefixIcon: const Icon(Icons.receipt_long),
-                    ),
+                  DropdownMenuItem(
+                    value: 'Portrait Session',
+                    child: Text('Portrait Session'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Corporate Event',
+                    child: Text('Corporate Event'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Engagement Shoot',
+                    child: Text('Engagement Shoot'),
                   ),
                 ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedEventType = value;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               Row(
@@ -346,51 +284,12 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
 
               // Team Member Selection Section
               const SizedBox(height: AppDimensions.spacing16),
-              _buildSectionCard('Team Assignment', [
-                Text(
-                  'Select Team Members for Quotation',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ..._mockTeamMembers.map((member) {
-                  final isSelected = _selectedTeamMembers.any(
-                    (m) => m['id'] == member['id'],
-                  );
-                  return CheckboxListTile(
-                    title: Text('${member['name']} (${member['category']})'),
-                    subtitle: Text('${member['phone']} | ${member['email']}'),
-                    value: isSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedTeamMembers.add(member);
-                        } else {
-                          _selectedTeamMembers.removeWhere(
-                            (m) => m['id'] == member['id'],
-                          );
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-                if (_selectedTeamMembers.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'Selected Team: ${_selectedTeamMembers.map((m) => m['name']).join(", ")}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ]),
+              CustomTextField(
+                label: 'Team',
+                controller: _teamController,
+                hint: 'Enter team members',
+                prefixIcon: const Icon(Icons.group),
+              ),
             ]),
             const SizedBox(height: AppDimensions.spacing16),
 
@@ -481,10 +380,36 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
             Row(
               children: [
                 Expanded(
-                  child: CustomTextField(
-                    label: 'Description',
-                    controller: item.description,
-                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                  child: Consumer<MasterDataProvider>(
+                    builder: (context, masterProvider, child) =>
+                        DropdownButtonFormField<String>(
+                          value: item.selectedPackageId,
+                          decoration: const InputDecoration(
+                            labelText: 'Package',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.inventory),
+                          ),
+                          validator: (v) => v == null ? 'Required' : null,
+                          items: masterProvider.packages
+                              .map(
+                                (p) => DropdownMenuItem(
+                                  value: p.id,
+                                  child: Text(p.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              item.selectedPackageId = value;
+                              if (value != null) {
+                                final selectedPackage = masterProvider.packages
+                                    .firstWhere((p) => p.id == value);
+                                item.price.text = selectedPackage.price
+                                    .toString();
+                              }
+                            });
+                          },
+                        ),
                   ),
                 ),
                 IconButton(
@@ -549,7 +474,13 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
           .map(
             (entry) => QuotationItem(
               id: DateTime.now().millisecondsSinceEpoch.toString(),
-              description: entry.description.text,
+              description: entry.selectedPackageId != null
+                  ? context
+                        .read<MasterDataProvider>()
+                        .packages
+                        .firstWhere((p) => p.id == entry.selectedPackageId)
+                        .name
+                  : 'Custom Item',
               quantity: int.parse(entry.quantity.text),
               unitPrice: double.parse(entry.price.text),
             ),
@@ -560,9 +491,8 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
         id:
             widget.quotation?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
-        quotationNumber: _quotationNumberController.text.isEmpty
-            ? 'Q-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}'
-            : _quotationNumberController.text,
+        quotationNumber:
+            'Q-${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch.toString().substring(9)}',
         clientId: _selectedPerson is Client
             ? _selectedPerson.id
             : 'temp_client_id',
@@ -575,14 +505,9 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
         lastName: _lastNameController.text.isEmpty
             ? null
             : _lastNameController.text,
-        eventName: _eventNameController.text.isEmpty
-            ? null
-            : _eventNameController.text,
         eventType: _selectedEventType ?? '',
         eventDate: _eventDate,
-        team: _selectedTeamMembers.isEmpty
-            ? null
-            : _selectedTeamMembers.map((m) => m['name']).join(", "),
+        team: _teamController.text.isEmpty ? null : _teamController.text,
         items: items,
         status: widget.quotation?.status ?? QuotationStatus.draft,
         createdAt: widget.quotation?.createdAt ?? DateTime.now(),
@@ -600,12 +525,12 @@ class _QuotationFormScreenState extends State<QuotationFormScreen> {
 }
 
 class QuotationItemEntry {
-  final TextEditingController description;
+  String? selectedPackageId;
   final TextEditingController quantity;
   final TextEditingController price;
 
   QuotationItemEntry({
-    required this.description,
+    this.selectedPackageId,
     required this.quantity,
     required this.price,
   });

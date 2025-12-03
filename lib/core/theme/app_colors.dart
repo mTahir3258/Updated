@@ -6,10 +6,18 @@ class AppColors {
   // static const Color primary = Color(0xFF1976D2); // Blue
   static const Color primaryLight = Color(0xFFBBDEFB);
   static const Color primaryDark = Color(0xFF0D47A1);
-  static const Color primary = Color(0xff0000FF);
+  static const Color primary = Color(0xFFFFA726); // Orange
+
+  // Gradient Colors
+  static const Color yellow = Color(0xFFFFEB3B); // Yellow
+  static const LinearGradient orangeYellowGradient = LinearGradient(
+    colors: [Color(0xFFFFA726), Color(0xFFFFEB3B)], // Orange to Yellow
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // Secondary Colors
-  static const Color secondary = Color(0xFFFFA726); // Orange
+  static const Color secondary = Color(0xff0000FF); //dark blue
   static const Color secondaryLight = Color(0xFFFFE0B2);
   static const Color secondaryDark = Color(0xFFC7780);
 

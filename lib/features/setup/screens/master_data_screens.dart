@@ -458,9 +458,11 @@ class _PackageScreenState extends State<PackageScreen> {
     final priceController = TextEditingController(
       text: item?.price.toString() ?? '',
     );
-    final descController = TextEditingController(text: item?.description ?? '');
-    final durationController = TextEditingController(); // Add duration
     final termsController = TextEditingController(); // Add terms
+    String? selectedServiceId = provider.services.isNotEmpty
+        ? provider.services.first.id
+        : null;
+    String? selectedSubServiceId = null;
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -486,17 +488,37 @@ class _PackageScreenState extends State<PackageScreen> {
                 validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: descController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                maxLines: 3,
+              DropdownButtonFormField<String>(
+                value: selectedServiceId,
+                decoration: const InputDecoration(labelText: 'Service'),
+                items: provider.services
+                    .map(
+                      (s) => DropdownMenuItem(value: s.id, child: Text(s.name)),
+                    )
+                    .toList(),
+                onChanged: (value) => setState(() {
+                  selectedServiceId = value;
+                  selectedSubServiceId = null; // Reset sub service
+                }),
+                validator: (v) => v == null ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: durationController,
-                decoration: const InputDecoration(
-                  labelText: 'Duration (e.g. 4 hours)',
-                ),
+              DropdownButtonFormField<String>(
+                value: selectedSubServiceId,
+                decoration: const InputDecoration(labelText: 'Sub Service'),
+                items: selectedServiceId != null
+                    ? provider.subServices
+                          .where((sub) => sub.serviceId == selectedServiceId)
+                          .map(
+                            (sub) => DropdownMenuItem(
+                              value: sub.id,
+                              child: Text(sub.name),
+                            ),
+                          )
+                          .toList()
+                    : [],
+                onChanged: (value) =>
+                    setState(() => selectedSubServiceId = value),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -541,18 +563,9 @@ class _PackageScreenState extends State<PackageScreen> {
               if (formKey.currentState?.validate() ?? false) {
                 final price = double.tryParse(priceController.text) ?? 0.0;
                 if (item != null) {
-                  provider.updatePackage(
-                    item,
-                    nameController.text,
-                    price,
-                    descController.text,
-                  );
+                  provider.updatePackage(item, nameController.text, price, '');
                 } else {
-                  provider.addPackage(
-                    nameController.text,
-                    price,
-                    descController.text,
-                  );
+                  provider.addPackage(nameController.text, price, '');
                 }
                 Navigator.pop(context);
               }

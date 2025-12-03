@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CommunicationProvider()),
       ],
       child: MaterialApp(
-        title: 'Photography & Videography Services',
+        title: 'The Sacred Souls',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         initialRoute: Routes.splash,

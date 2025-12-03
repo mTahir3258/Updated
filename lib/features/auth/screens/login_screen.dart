@@ -7,6 +7,7 @@ import 'package:ui_specification/core/utils/validators.dart';
 import 'package:ui_specification/core/widgets/custom_text_field.dart';
 import 'package:ui_specification/core/widgets/loading_indicator.dart';
 import 'package:ui_specification/core/constants/routes.dart';
+import 'package:ui_specification/core/constants/app_images.dart';
 import 'package:ui_specification/features/auth/providers/auth_provider.dart';
 
 /// Login screen with responsive layout
@@ -72,14 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Logo
-              Icon(
-                Icons.event_available,
-                size: AppDimensions.iconXXLarge * 2,
-                color: AppColors.primary,
+              Image.asset(
+                AppImages.appLogo,
+                width: AppDimensions.iconXXXLarge * 2,
+                height: AppDimensions.iconXXXLarge * 2,
               ),
               const SizedBox(height: AppDimensions.spacing16),
               Text(
-                'Photography & Videography Services',
+                'The Sacred Souls',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: AppDimensions.spacing48),
@@ -106,14 +107,14 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo
-                Icon(
-                  Icons.event_available_outlined,
-                  size: AppDimensions.iconXXLarge * 2,
-                  color: AppColors.primary,
+                Image.asset(
+                  AppImages.appLogo,
+                  width: AppDimensions.iconXXLarge * 2,
+                  height: AppDimensions.iconXXLarge * 2,
                 ),
                 const SizedBox(height: AppDimensions.spacing16),
                 Text(
-                  'Photography & Videography Services',
+                  'The Sacred Souls',
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const SizedBox(height: AppDimensions.spacing48),

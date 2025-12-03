@@ -96,14 +96,6 @@ class _OrderListScreenState extends State<OrderListScreen>
             ),
         ],
       ),
-      floatingActionButton: Responsive.isMobile(context)
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(Routes.orderForm);
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
       body: body,
     );
   }

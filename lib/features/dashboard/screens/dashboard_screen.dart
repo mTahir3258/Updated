@@ -1,17 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/theme/app_dimensions.dart';
 import 'package:ui_specification/core/utils/responsive.dart';
+import 'package:ui_specification/core/constants/app_images.dart';
+import 'package:ui_specification/core/widgets/status_badge.dart';
 import 'package:ui_specification/features/dashboard/widgets/metric_card.dart';
 import 'package:ui_specification/features/dashboard/widgets/metrics_chart.dart';
 import 'package:ui_specification/features/dashboard/widgets/notifications_widget.dart';
+import 'package:ui_specification/features/events/providers/event_provider.dart';
+import 'package:ui_specification/models/event.dart';
 
 /// Dashboard screen with metric cards
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = _focusedDay;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventProvider>().loadEvents();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return Consumer<EventProvider>(
+      builder: (context, eventProvider, child) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Dashboard'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () {
+                _showNotificationsBottomSheet(context);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.account_circle_outlined),
+              onPressed: () {
+                Navigator.pushNamed(context, '/my-profile');
+              },
+            ),
+            const SizedBox(width: AppDimensions.spacing8),
+          ],
+        ),
+        drawer: _buildDrawer(context),
+        body: _buildBody(context, eventProvider),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, EventProvider eventProvider) {
     final content = RefreshIndicator(
       onRefresh: () async {
         // TODO: Refresh dashboard data
@@ -37,6 +89,14 @@ class DashboardScreen extends StatelessWidget {
 
                   // Chart Section
                   const MetricsChart(),
+                  SizedBox(
+                    height: Responsive.isMobile(context)
+                        ? AppDimensions.spacing20
+                        : AppDimensions.spacing24,
+                  ),
+
+                  // Calendar Section
+                  _buildCalendarView(eventProvider),
                   SizedBox(
                     height: Responsive.isMobile(context)
                         ? AppDimensions.spacing20
@@ -78,6 +138,8 @@ class DashboardScreen extends StatelessWidget {
                         return Column(
                           children: [
                             const MetricsChart(),
+                            const SizedBox(height: AppDimensions.spacing32),
+                            _buildCalendarView(eventProvider),
                             const SizedBox(height: AppDimensions.spacing32),
                             const NotificationsWidget(),
                           ],
@@ -208,6 +270,152 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildCalendarView(EventProvider provider) {
+    final events = provider.getEventsForDay(_selectedDay ?? _focusedDay);
+
+    return Column(
+      children: [
+        Card(
+          margin: const EdgeInsets.all(AppDimensions.spacing16),
+          child: TableCalendar<Event>(
+            firstDay: DateTime.utc(2020, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            calendarFormat: _calendarFormat,
+            eventLoader: (day) => provider.getEventsForDay(day),
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            calendarStyle: const CalendarStyle(
+              outsideDaysVisible: false,
+              markerDecoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+            onDaySelected: (selectedDay, focusedDay) {
+              if (!isSameDay(_selectedDay, selectedDay)) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              }
+            },
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              _focusedDay = focusedDay;
+            },
+          ),
+        ),
+        const Divider(),
+        SizedBox(
+          height: 300,
+          child: events.isEmpty
+              ? const Center(child: Text('No events for this day'))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(AppDimensions.spacing8),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    return _buildEventCard(events[index]);
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEventCard(Event event) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppDimensions.spacing8),
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spacing12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    event.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                StatusBadge(
+                  label: event.status.name.toUpperCase(),
+                  type: _getStatusType(event.status),
+                  small: true,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimensions.spacing8),
+            Row(
+              children: [
+                const Icon(
+                  Icons.person_outline,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: AppDimensions.spacing4),
+                Text(
+                  event.clientName,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimensions.spacing4),
+            Row(
+              children: [
+                const Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: AppDimensions.spacing4),
+                Text(
+                  DateFormat('MMM dd, yyyy').format(event.date),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDimensions.spacing4),
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(width: AppDimensions.spacing4),
+                Expanded(
+                  child: Text(
+                    event.venue,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  StatusType _getStatusType(EventStatus status) {
+    switch (status) {
+      case EventStatus.upcoming:
+        return StatusType.newStatus;
+      case EventStatus.completed:
+        return StatusType.success;
+      case EventStatus.cancelled:
+        return StatusType.failed;
+    }
+  }
+
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -219,14 +427,10 @@ class DashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Icon(
-                  Icons.event_available,
-                  size: 48,
-                  color: AppColors.textOnPrimary,
-                ),
+                Image.asset(AppImages.appLogo, width: 48, height: 48),
                 const SizedBox(height: AppDimensions.spacing8),
                 Text(
-                  'Photography & Videography Services',
+                  'The Sacred Souls',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.textOnPrimary,
                   ),

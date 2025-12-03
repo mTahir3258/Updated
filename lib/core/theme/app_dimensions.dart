@@ -44,12 +44,15 @@ class AppDimensions {
   static const double iconLarge = 24.0;
   static const double iconXLarge = 32.0;
   static const double iconXXLarge = 48.0;
+  static const double iconXXXLarge = 60.0;
 
   // Avatar Sizes
   static const double avatarSmall = 24.0;
   static const double avatarMedium = 32.0;
   static const double avatarLarge = 40.0;
   static const double avatarXLarge = 48.0;
+  static const double avatarXXLarge = 60.0;
+  static const double avatarXXXLarge = 80.0;
 
   // Table
   static const double tableRowHeight = 52.0;
