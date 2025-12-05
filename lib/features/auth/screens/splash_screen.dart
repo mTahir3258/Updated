@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ui_specification/core/theme/app_colors.dart';
 import 'package:ui_specification/core/theme/app_dimensions.dart';
 import 'package:ui_specification/core/constants/app_images.dart';
+import 'package:ui_specification/core/utils/responsive.dart';
 
 /// Splash screen shown on app launch
 class SplashScreen extends StatefulWidget {
@@ -36,8 +37,18 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Image.asset(
                 AppImages.appLogo,
-                width: AppImages.appLogoSize,
-                height: AppImages.appLogoSize,
+                width: Responsive.value(
+                  context: context,
+                  mobile: 100.0,
+                  tablet: 150.0,
+                  desktop: 200.0,
+                ),
+                height: Responsive.value(
+                  context: context,
+                  mobile: 100.0,
+                  tablet: 150.0,
+                  desktop: 200.0,
+                ),
               ),
               const SizedBox(height: AppDimensions.spacing24),
               Text(

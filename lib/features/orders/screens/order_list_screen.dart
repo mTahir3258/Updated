@@ -174,7 +174,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                 children: [
                   Expanded(
                     child: Text(
-                      order.eventName,
+                      order.eventName ?? 'N/A',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -287,7 +287,7 @@ class _OrderListScreenState extends State<OrderListScreen>
                     SizedBox(
                       width: 150,
                       child: Text(
-                        order.eventName,
+                        order.eventName ?? 'N/A',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

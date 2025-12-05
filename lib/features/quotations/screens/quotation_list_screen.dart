@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,13 @@ import 'package:ui_specification/core/widgets/filter_bar.dart';
 import 'package:ui_specification/core/widgets/pagination_controls.dart';
 import 'package:ui_specification/core/constants/routes.dart';
 import 'package:ui_specification/core/utils/responsive.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:ui_specification/models/lead.dart';
+import 'package:ui_specification/models/order.dart';
 
 class QuotationListScreen extends StatefulWidget {
   const QuotationListScreen({super.key});
@@ -351,6 +359,25 @@ class _QuotationListScreenState extends State<QuotationListScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.picture_as_pdf,
+                    color: AppColors.redColor,
+                  ),
+                  onPressed: () => _generateAndViewPdf(quotation),
+                  tooltip: 'View PDF',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share, color: AppColors.primary),
+                  onPressed: () => _sharePdf(quotation),
+                  tooltip: 'Share PDF',
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -368,5 +395,279 @@ class _QuotationListScreenState extends State<QuotationListScreen> {
       case QuotationStatus.rejected:
         return StatusType.failed;
     }
+  }
+
+  Future<void> _generateAndViewPdf(Quotation quotation) async {
+    final pdf = pw.Document();
+
+    // Mock lead and order data - in real app, fetch from providers
+    final mockLead = Lead.getMockLeads().firstWhere(
+      (lead) => lead.id == quotation.clientId,
+      orElse: () => Lead.getMockLeads().first,
+    );
+    final mockOrder = Order.generateMockList(5).firstWhere(
+      (order) => order.clientId == quotation.clientId,
+      orElse: () => Order.generateMockList(5).first,
+    );
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Header
+              pw.Text(
+                'Quotation Details',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+
+              // Quotation Info
+              pw.Text(
+                'Quotation Number: ${quotation.quotationNumber}',
+                style: pw.TextStyle(fontSize: 16),
+              ),
+              pw.Text(
+                'Client: ${quotation.clientName}',
+                style: pw.TextStyle(fontSize: 16),
+              ),
+              pw.Text(
+                'Event Type: ${quotation.eventType}',
+                style: pw.TextStyle(fontSize: 16),
+              ),
+              pw.Text(
+                'Event Date: ${DateFormat('MMM dd, yyyy').format(quotation.eventDate)}',
+                style: pw.TextStyle(fontSize: 16),
+              ),
+              pw.Text(
+                'Status: ${quotation.status.name.toUpperCase()}',
+                style: pw.TextStyle(fontSize: 16),
+              ),
+              pw.SizedBox(height: 20),
+
+              // Items
+              pw.Text(
+                'Items:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              ...quotation.items.map(
+                (item) => pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('${item.description} (x${item.quantity})'),
+                    pw.Text('₹${item.unitPrice}'),
+                  ],
+                ),
+              ),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    'Total Amount:',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.Text(
+                    '₹${quotation.totalAmount}',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 20),
+
+              // Lead Details
+              pw.Text(
+                'Lead Details:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Name: ${mockLead.fullName}'),
+              pw.Text('Email: ${mockLead.email}'),
+              pw.Text('Phone: ${mockLead.phone}'),
+              pw.Text('Status: ${mockLead.status}'),
+              pw.Text('Source: ${mockLead.source}'),
+              pw.SizedBox(height: 20),
+
+              // Order Details
+              pw.Text(
+                'Order Details:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Order ID: ${mockOrder.id}'),
+              pw.Text('Event Name: ${mockOrder.eventName}'),
+              pw.Text('Venue: ${mockOrder.venue}'),
+              pw.Text('Status: ${mockOrder.status}'),
+              pw.Text('Total Amount: ₹${mockOrder.totalAmount}'),
+              pw.Text('Paid Amount: ₹${mockOrder.paidAmount}'),
+              pw.SizedBox(height: 20),
+
+              // Assigned Team
+              pw.Text(
+                'Assigned Team:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              if (quotation.team != null) pw.Text('Team: ${quotation.team}'),
+              pw.Text('Number of Teams: ${mockOrder.services.length}'),
+              ...mockOrder.services.map(
+                (service) => pw.Text(
+                  '${service.serviceName}: ${service.teamMember ?? 'Unassigned'} (${service.persons ?? 0} persons)',
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
+  }
+
+  Future<void> _sharePdf(Quotation quotation) async {
+    final pdf = pw.Document();
+
+    // Same content as above
+    final mockLead = Lead.getMockLeads().firstWhere(
+      (lead) => lead.id == quotation.clientId,
+      orElse: () => Lead.getMockLeads().first,
+    );
+    final mockOrder = Order.generateMockList(5).firstWhere(
+      (order) => order.clientId == quotation.clientId,
+      orElse: () => Order.generateMockList(5).first,
+    );
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Quotation Details',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text('Quotation Number: ${quotation.quotationNumber}'),
+              pw.Text('Client: ${quotation.clientName}'),
+              pw.Text('Event Type: ${quotation.eventType}'),
+              pw.Text(
+                'Event Date: ${DateFormat('MMM dd, yyyy').format(quotation.eventDate)}',
+              ),
+              pw.Text('Status: ${quotation.status.name.toUpperCase()}'),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Items:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              ...quotation.items.map(
+                (item) => pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('${item.description} (x${item.quantity})'),
+                    pw.Text('₹${item.unitPrice}'),
+                  ],
+                ),
+              ),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    'Total Amount:',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.Text(
+                    '₹${quotation.totalAmount}',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Lead Details:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Name: ${mockLead.fullName}'),
+              pw.Text('Email: ${mockLead.email}'),
+              pw.Text('Phone: ${mockLead.phone}'),
+              pw.Text('Status: ${mockLead.status}'),
+              pw.Text('Source: ${mockLead.source}'),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Order Details:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Order ID: ${mockOrder.id}'),
+              pw.Text('Event Name: ${mockOrder.eventName}'),
+              pw.Text('Venue: ${mockOrder.venue}'),
+              pw.Text('Status: ${mockOrder.status}'),
+              pw.Text('Total Amount: ₹${mockOrder.totalAmount}'),
+              pw.Text('Paid Amount: ₹${mockOrder.paidAmount}'),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Assigned Team:',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              if (quotation.team != null) pw.Text('Team: ${quotation.team}'),
+              pw.Text('Number of Teams: ${mockOrder.services.length}'),
+              ...mockOrder.services.map(
+                (service) => pw.Text(
+                  '${service.serviceName}: ${service.teamMember ?? 'Unassigned'} (${service.persons ?? 0} persons)',
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    final tempDir = await getTemporaryDirectory();
+    final file = File(
+      '${tempDir.path}/quotation_${quotation.quotationNumber}.pdf',
+    );
+    await file.writeAsBytes(bytes);
+    await Share.shareXFiles([
+      XFile(file.path),
+    ], text: 'Quotation ${quotation.quotationNumber}');
   }
 }

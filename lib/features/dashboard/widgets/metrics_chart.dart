@@ -29,11 +29,13 @@ class MetricsChart extends StatelessWidget {
             ? constraints.maxHeight
             : double.infinity;
 
-        // Get device type for responsive values
-        final deviceType = Responsive.getDeviceType(context);
-        final isMobile = deviceType == DeviceType.mobile;
-        final isTablet = deviceType == DeviceType.tablet;
-        final isDesktop = deviceType == DeviceType.desktop;
+        // Get screen width for responsive values
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isSmallMobile = screenWidth < 400;
+        final isMediumMobile = screenWidth >= 400 && screenWidth < 600;
+        final isMobile = screenWidth < 600;
+        final isTablet = screenWidth >= 600 && screenWidth < 1200;
+        final isDesktop = screenWidth >= 1200;
 
         // Responsive dimensions
         final titleHeight = Responsive.value<double>(
@@ -61,27 +63,10 @@ class MetricsChart extends StatelessWidget {
           desktop: AppDimensions.spacing16,
         );
 
+        final otherHeights =
+            titleHeight + legendHeight + (padding * 2) + spacing;
         final chartHeight = hasConstrainedHeight
-            ? (availableHeight -
-                      titleHeight -
-                      legendHeight -
-                      (padding * 2) -
-                      spacing)
-                  .clamp(
-                    Responsive.value<double>(
-                      context: context,
-                      mobile: 80.0,
-                      tablet: 120.0,
-                      desktop: 150.0,
-                    ),
-                    availableHeight *
-                        Responsive.value<double>(
-                          context: context,
-                          mobile: 0.6,
-                          tablet: 0.7,
-                          desktop: 0.8,
-                        ),
-                  )
+            ? (availableHeight - otherHeights).clamp(0.0, double.infinity)
             : Responsive.value<double>(
                 context: context,
                 mobile: 120.0,
@@ -90,34 +75,39 @@ class MetricsChart extends StatelessWidget {
               );
 
         // Responsive bar width based on available width and device
-        final barWidth = (availableWidth / data.length).clamp(
-          Responsive.value<double>(
-            context: context,
-            mobile: 12.0,
-            tablet: 16.0,
-            desktop: 20.0,
-          ),
-          Responsive.value<double>(
-            context: context,
-            mobile: 24.0,
-            tablet: 32.0,
-            desktop: 40.0,
-          ),
-        );
+        final barWidth = isMobile
+            ? (availableWidth / data.length) -
+                  8.0 // Fit all bars without scroll
+            : (availableWidth / data.length).clamp(
+                Responsive.value<double>(
+                  context: context,
+                  mobile: 12.0,
+                  tablet: 16.0,
+                  desktop: 20.0,
+                ),
+                Responsive.value<double>(
+                  context: context,
+                  mobile: 24.0,
+                  tablet: 32.0,
+                  desktop: 40.0,
+                ),
+              );
 
         // Responsive text sizes
-        final labelFontSize = Responsive.value<double>(
-          context: context,
-          mobile: 10.0,
-          tablet: 11.0,
-          desktop: 12.0,
-        );
-        final titleFontSize = Responsive.value<double>(
-          context: context,
-          mobile: 16.0,
-          tablet: 17.0,
-          desktop: 18.0,
-        );
+        final labelFontSize = isSmallMobile
+            ? 9.0
+            : isMediumMobile
+            ? 10.0
+            : isTablet
+            ? 11.0
+            : 12.0;
+        final titleFontSize = isSmallMobile
+            ? 14.0
+            : isMediumMobile
+            ? 15.0
+            : isTablet
+            ? 17.0
+            : 18.0;
 
         // Calculate max value for scaling
         final maxValue = data
@@ -141,69 +131,110 @@ class MetricsChart extends StatelessWidget {
               SizedBox(height: spacing),
               SizedBox(
                 height: chartHeight,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: data.map((item) {
-                      final value = item['value'] as double;
-                      final color = item['color'] as Color;
-                      final label = item['label'] as String;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Responsive.value<double>(
-                            context: context,
-                            mobile: 4.0,
-                            tablet: 6.0,
-                            desktop: 8.0,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              width: barWidth,
-                              height: value * scaleFactor,
-                              decoration: BoxDecoration(
-                                color: color,
-                                borderRadius: BorderRadius.circular(
-                                  Responsive.value<double>(
-                                    context: context,
-                                    mobile: 2,
-                                    tablet: 3,
-                                    desktop: 4,
+                child: isMobile
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: data.map((item) {
+                          final value = item['value'] as double;
+                          final color = item['color'] as Color;
+                          final label = item['label'] as String;
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 2.0,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    width: barWidth,
+                                    height: value * scaleFactor,
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
                                   ),
+                                  SizedBox(height: AppDimensions.spacing2),
+                                  Text(
+                                    label,
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: labelFontSize,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: data.map((item) {
+                            final value = item['value'] as double;
+                            final color = item['color'] as Color;
+                            final label = item['label'] as String;
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Responsive.value<double>(
+                                  context: context,
+                                  mobile: 4.0,
+                                  tablet: 6.0,
+                                  desktop: 8.0,
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: Responsive.value<double>(
-                                context: context,
-                                mobile: AppDimensions.spacing2,
-                                tablet: AppDimensions.spacing4,
-                                desktop: AppDimensions.spacing4,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    width: barWidth,
+                                    height: value * scaleFactor,
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(
+                                        Responsive.value<double>(
+                                          context: context,
+                                          mobile: 2,
+                                          tablet: 3,
+                                          desktop: 4,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: Responsive.value<double>(
+                                      context: context,
+                                      mobile: AppDimensions.spacing2,
+                                      tablet: AppDimensions.spacing4,
+                                      desktop: AppDimensions.spacing4,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: barWidth + 10,
+                                    child: Text(
+                                      label,
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: labelFontSize,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                              width: barWidth + 10,
-                              child: Text(
-                                label,
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: labelFontSize,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ),
+                      ),
               ),
               SizedBox(
                 height: Responsive.value<double>(
@@ -223,9 +254,9 @@ class MetricsChart extends StatelessWidget {
                 ),
                 runSpacing: AppDimensions.spacing8,
                 children: [
-                  _buildLegend('Today', AppColors.primary, isMobile),
-                  _buildLegend('Upcoming', AppColors.success, isMobile),
-                  _buildLegend('This Month', AppColors.warning, isMobile),
+                  _buildLegend('Today', AppColors.primary, isSmallMobile),
+                  _buildLegend('Upcoming', AppColors.success, isSmallMobile),
+                  _buildLegend('This Month', AppColors.warning, isSmallMobile),
                 ],
               ),
             ],

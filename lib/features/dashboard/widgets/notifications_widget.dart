@@ -11,11 +11,11 @@ class NotificationsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get device type for responsive values
-    final deviceType = Responsive.getDeviceType(context);
-    final isMobile = deviceType == DeviceType.mobile;
-    final isTablet = deviceType == DeviceType.tablet;
-    final isDesktop = deviceType == DeviceType.desktop;
+    // Get screen width for responsive values
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    final isTablet = screenWidth >= 600 && screenWidth < 1200;
+    final isDesktop = screenWidth >= 1200;
 
     // Adjust number of notifications shown based on screen size
     final notifications = [

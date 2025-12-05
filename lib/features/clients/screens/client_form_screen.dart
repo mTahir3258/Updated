@@ -21,12 +21,10 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _mobileNumberController;
   late TextEditingController _whatsappController;
-  late TextEditingController _alternateNumberController;
   late TextEditingController _addressController;
   late TextEditingController _emailController;
   late TextEditingController _sourceController;
   late TextEditingController _createdByController;
-  late TextEditingController _notesController;
 
   @override
   void initState() {
@@ -47,20 +45,16 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
     _whatsappController = TextEditingController(
       text: widget.client?.whatsappNumber ?? '',
     );
-    _alternateNumberController = TextEditingController(
-      text: widget.client?.alternateNumber ?? '',
-    );
-    _emailController = TextEditingController(text: widget.client?.email ?? '');
     _addressController = TextEditingController(
       text: widget.client?.address ?? '',
     );
+    _emailController = TextEditingController(text: widget.client?.email ?? '');
     _sourceController = TextEditingController(
       text: widget.client?.source ?? '',
     );
     _createdByController = TextEditingController(
       text: widget.client?.createdBy ?? '',
     );
-    _notesController = TextEditingController(text: widget.client?.notes ?? '');
   }
 
   @override
@@ -69,12 +63,10 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
     _lastNameController.dispose();
     _mobileNumberController.dispose();
     _whatsappController.dispose();
-    _alternateNumberController.dispose();
-    _emailController.dispose();
     _addressController.dispose();
+    _emailController.dispose();
     _sourceController.dispose();
     _createdByController.dispose();
-    _notesController.dispose();
     super.dispose();
   }
 
@@ -157,14 +149,6 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
               ),
               const SizedBox(height: 16),
               CustomTextField(
-                label: 'Alternate Number',
-                controller: _alternateNumberController,
-                keyboardType: TextInputType.phone,
-                prefixIcon: const Icon(Icons.phone_android_outlined),
-                hint: 'Optional',
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
                 label: 'Email',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -199,17 +183,6 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
                     value?.isEmpty ?? true ? 'Required' : null,
                 prefixIcon: const Icon(Icons.person_add_outlined),
                 hint: 'Your name or user ID',
-              ),
-            ]),
-            const SizedBox(height: AppDimensions.spacing16),
-
-            _buildSectionCard('Additional Notes', [
-              CustomTextField(
-                label: 'Notes',
-                controller: _notesController,
-                maxLines: 3,
-                prefixIcon: const Icon(Icons.note_outlined),
-                hint: 'Optional notes about the client',
               ),
             ]),
           ],
@@ -252,18 +225,14 @@ class _ClientFormScreenState extends State<ClientFormScreen> {
         lastName: _lastNameController.text,
         mobileNumber: _mobileNumberController.text,
         whatsappNumber: _whatsappController.text,
-        alternateNumber: _alternateNumberController.text.isEmpty
-            ? null
-            : _alternateNumberController.text,
-        email: _emailController.text.isEmpty ? null : _emailController.text,
         address: _addressController.text.isEmpty
             ? null
             : _addressController.text,
+        email: _emailController.text.isEmpty ? null : _emailController.text,
         source: _sourceController.text,
         createdBy: _createdByController.text,
         createdDate: widget.client?.createdDate ?? DateTime.now(),
         contactPersons: widget.client?.contactPersons ?? [],
-        notes: _notesController.text.isEmpty ? null : _notesController.text,
       );
 
       if (widget.client != null) {

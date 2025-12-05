@@ -124,7 +124,7 @@ class _EventListScreenState extends State<EventListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Photography Shoots'),
+        title: const Text('Events'),
         actions: [
           IconButton(
             icon: Icon(_isCalendarView ? Icons.list : Icons.calendar_month),
@@ -147,7 +147,7 @@ class _EventListScreenState extends State<EventListScreen> {
                   Navigator.of(context).pushNamed(Routes.eventForm);
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Add Photography Shoot'),
+                label: const Text('Add Event '),
               ),
             ),
         ],

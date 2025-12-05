@@ -3,7 +3,7 @@ class Order {
   final String clientName;
   final String clientId;
   final String? clientMobileNumber;
-  final String eventName;
+  final String? eventName;
   final String eventType;
   final DateTime eventDate;
   final String venue;
@@ -25,7 +25,7 @@ class Order {
     required this.clientName,
     required this.clientId,
     this.clientMobileNumber,
-    required this.eventName,
+    this.eventName,
     required this.eventType,
     required this.eventDate,
     required this.venue,

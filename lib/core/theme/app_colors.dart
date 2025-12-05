@@ -20,6 +20,7 @@ class AppColors {
   static const Color secondary = Color(0xff0000FF); //dark blue
   static const Color secondaryLight = Color(0xFFFFE0B2);
   static const Color secondaryDark = Color(0xFFC7780);
+  static const Color redColor = Colors.red;
 
   // Status Colors
   static const Color error = Color(0xFFD32F2F); // Red

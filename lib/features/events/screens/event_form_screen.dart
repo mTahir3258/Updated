@@ -18,19 +18,19 @@ class EventFormScreen extends StatefulWidget {
 class _EventFormScreenState extends State<EventFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _typeController;
   late TextEditingController _venueController;
   late TextEditingController _clientNameController;
   late TextEditingController _totalAmountController;
   late TextEditingController _paidAmountController;
   DateTime _selectedDate = DateTime.now();
   EventStatus _status = EventStatus.upcoming;
+  String _eventType = '';
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.event?.name ?? '');
-    _typeController = TextEditingController(text: widget.event?.type ?? '');
+    _eventType = widget.event?.type ?? '';
     _venueController = TextEditingController(text: widget.event?.venue ?? '');
     _clientNameController = TextEditingController(
       text: widget.event?.clientName ?? '',
@@ -50,7 +50,6 @@ class _EventFormScreenState extends State<EventFormScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _typeController.dispose();
     _venueController.dispose();
     _clientNameController.dispose();
     _totalAmountController.dispose();
@@ -63,11 +62,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          widget.event == null
-              ? 'New Photography Shoot'
-              : 'Edit Photography Shoot',
-        ),
+        title: Text(widget.event == null ? 'New Event' : 'Edit Edit'),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
@@ -99,12 +94,26 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 prefixIcon: const Icon(Icons.event_outlined),
               ),
               const SizedBox(height: 16),
-              CustomTextField(
-                label: 'Event Type',
-                controller: _typeController,
+              DropdownButtonFormField<String>(
+                value: _eventType.isEmpty ? null : _eventType,
+                decoration: const InputDecoration(
+                  labelText: 'Event Type',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.category_outlined),
+                ),
+                items: ['Wedding', 'Birthday', 'Corporate', 'Other']
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _eventType = value);
+                  }
+                },
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Required' : null,
-                prefixIcon: const Icon(Icons.category_outlined),
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -238,7 +247,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
             widget.event?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text,
-        type: _typeController.text,
+        type: _eventType,
         date: _selectedDate,
         venue: _venueController.text,
         clientId: widget.event?.clientId ?? 'CLT001', // Mock client ID

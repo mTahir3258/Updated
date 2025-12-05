@@ -19,13 +19,13 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _clientNameController;
   late TextEditingController _clientMobileNumberController;
-  late TextEditingController _eventNameController;
-  late TextEditingController _eventTypeController;
   late TextEditingController _venueController;
   late TextEditingController _totalAmountController;
   late TextEditingController _paidAmountController;
   late TextEditingController _dueAmountController;
   late TextEditingController _notesController;
+
+  String _eventType = '';
 
   DateTime? _eventDate;
   DateTime? _dueDate;
@@ -46,12 +46,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     _clientMobileNumberController = TextEditingController(
       text: widget.order?.clientMobileNumber ?? '',
     );
-    _eventNameController = TextEditingController(
-      text: widget.order?.eventName ?? '',
-    );
-    _eventTypeController = TextEditingController(
-      text: widget.order?.eventType ?? '',
-    );
+    _eventType = widget.order?.eventType ?? '';
     _venueController = TextEditingController(text: widget.order?.venue ?? '');
     _totalAmountController = TextEditingController(
       text: widget.order?.totalAmount.toString() ?? '',
@@ -93,8 +88,6 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   void dispose() {
     _clientNameController.dispose();
     _clientMobileNumberController.dispose();
-    _eventNameController.dispose();
-    _eventTypeController.dispose();
     _venueController.dispose();
     _totalAmountController.dispose();
     _paidAmountController.dispose();
@@ -154,21 +147,26 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
             const SizedBox(height: AppDimensions.spacing16),
 
             _buildSectionCard('Event Details', [
-              CustomTextField(
-                label: 'Event Name',
-                controller: _eventNameController,
+              DropdownButtonFormField<String>(
+                value: _eventType.isEmpty ? null : _eventType,
+                decoration: const InputDecoration(
+                  labelText: 'Event Type',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.category_outlined),
+                ),
+                items: ['Wedding', 'Birthday', 'Corporate', 'Other']
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _eventType = value);
+                  }
+                },
                 validator: (value) =>
                     value?.isEmpty ?? true ? 'Required' : null,
-                prefixIcon: const Icon(Icons.event_outlined),
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                label: 'Event Type',
-                controller: _eventTypeController,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Required' : null,
-                prefixIcon: const Icon(Icons.category_outlined),
-                hint: 'e.g., Wedding, Birthday, Corporate',
               ),
               const SizedBox(height: 16),
               InkWell(
@@ -454,8 +452,8 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
         clientMobileNumber: _clientMobileNumberController.text.isEmpty
             ? null
             : _clientMobileNumberController.text,
-        eventName: _eventNameController.text,
-        eventType: _eventTypeController.text,
+        eventName: null,
+        eventType: _eventType,
         eventDate: _eventDate!,
         venue: _venueController.text,
         status: _status,
