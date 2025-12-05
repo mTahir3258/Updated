@@ -39,9 +39,9 @@ class _SplashScreenState extends State<SplashScreen> {
                 AppImages.appLogo,
                 width: Responsive.value(
                   context: context,
-                  mobile: 100.0,
-                  tablet: 150.0,
-                  desktop: 200.0,
+                  mobile: 150.0,
+                  tablet: 200.0,
+                  desktop: 250.0,
                 ),
                 height: Responsive.value(
                   context: context,

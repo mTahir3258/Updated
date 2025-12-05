@@ -235,7 +235,7 @@ class _UserListScreenState extends State<UserListScreen> {
               context,
               MaterialPageRoute(builder: (context) => const UserFormScreen()),
             ),
-            backgroundColor: Colors.blue,
+            backgroundColor: AppColors.primary,
             icon: const Icon(Icons.add),
             label: const Text('Add User'),
           ),

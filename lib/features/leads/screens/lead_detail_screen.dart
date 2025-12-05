@@ -202,6 +202,35 @@ class LeadDetailScreen extends StatelessWidget {
               );
             },
           ),
+          const SizedBox(height: 16),
+
+          // Followup Section
+          _buildSectionCard(
+            title: 'Followup',
+            icon: Icons.schedule_outlined,
+            count: 0,
+            actionLabel: 'Add Followup',
+            onAction: () => _showAddFollowupDialog(context, lead.id),
+            child: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.schedule,
+                      size: 48,
+                      color: AppColors.textSecondary,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'No followups scheduled',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 80), // Space for FAB
         ],
@@ -247,6 +276,94 @@ class LeadDetailScreen extends StatelessWidget {
             child: const Text('Save'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showAddFollowupDialog(BuildContext context, String leadId) {
+    DateTime selectedDate = DateTime.now();
+    TimeOfDay selectedTime = TimeOfDay.now();
+    String note = '';
+    String status = 'Pending';
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Add Followup'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Date
+              ListTile(
+                title: const Text('Date'),
+                subtitle: Text(DateFormat('yyyy-MM-dd').format(selectedDate)),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (picked != null) {
+                    setState(() => selectedDate = picked);
+                  }
+                },
+              ),
+              // Time
+              ListTile(
+                title: const Text('Time'),
+                subtitle: Text(selectedTime.format(context)),
+                trailing: const Icon(Icons.access_time),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: selectedTime,
+                  );
+                  if (picked != null) {
+                    setState(() => selectedTime = picked);
+                  }
+                },
+              ),
+              // Note
+              TextField(
+                decoration: const InputDecoration(labelText: 'Note'),
+                onChanged: (value) => note = value,
+                maxLines: 3,
+              ),
+              SizedBox(height: 10), // Status
+              DropdownButtonFormField<String>(
+                value: status,
+                decoration: const InputDecoration(labelText: 'Status'),
+                items: ['Pending', 'Completed', 'Cancelled'].map((
+                  String value,
+                ) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => status = value!),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Save followup
+                // For now, just print or handle as needed
+                print('Followup: $selectedDate $selectedTime $note $status');
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
       ),
     );
   }

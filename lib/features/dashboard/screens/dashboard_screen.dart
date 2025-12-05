@@ -24,6 +24,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
@@ -118,8 +119,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildQuickMetrics(context),
             SizedBox(
               height: isTablet
-                  ? AppDimensions.spacing24
-                  : AppDimensions.spacing32,
+                  ? AppDimensions.spacing16
+                  : AppDimensions.spacing16,
             ),
 
             // Chart and Notifications in responsive layout
@@ -132,7 +133,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Expanded(
                             flex: 3,
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 400),
+                              constraints: BoxConstraints(
+                                maxHeight: Responsive.value(
+                                  context: context,
+                                  mobile: 400.0,
+                                  tablet: 350.0,
+                                  desktop: 200.0,
+                                ),
+                              ),
                               child: AspectRatio(
                                 aspectRatio: 2.5,
                                 child: const MetricsChart(),
@@ -143,7 +151,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Expanded(
                             flex: 2,
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 300),
+                              constraints: BoxConstraints(
+                                maxHeight: Responsive.value(
+                                  context: context,
+                                  mobile: 300.0,
+                                  tablet: 250.0,
+                                  desktop: 120.0,
+                                ),
+                              ),
                               child: AspectRatio(
                                 aspectRatio: 1.5,
                                 child: const NotificationsWidget(),
@@ -152,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppDimensions.spacing32),
+                      const SizedBox(height: AppDimensions.spacing16),
                       _buildCalendarView(eventProvider),
                     ],
                   )
@@ -201,59 +216,63 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // Estimate content height: icon(24) + padding(16*2) + title(20) + value(28) + subtitle(16) + spacing(4*3) ≈ 140
         const estimatedContentHeight = 140.0;
         final aspectRatio = itemWidth / estimatedContentHeight;
+        final itemHeight = itemWidth / aspectRatio;
+        final gridHeight = 2 * itemHeight + AppDimensions.spacing16;
 
-        return GridView.count(
-          crossAxisCount: crossAxisCount,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: AppDimensions.spacing16,
-          mainAxisSpacing: AppDimensions.spacing16,
-          childAspectRatio: aspectRatio.clamp(
-            1.0,
-            3.0,
-          ), // Clamp to reasonable range
-          children: [
-            _buildMetricCard(
-              context,
-              Icons.leaderboard_outlined,
-              'Total Leads',
-              '42',
-              'Past 30 days',
-              AppColors.info,
-              AppColors.success,
-              '/leads',
-            ),
-            _buildMetricCard(
-              context,
-              Icons.calendar_today_outlined,
-              'Upcoming Orders',
-              '12',
-              'Photography shoots in next 30 days',
-              AppColors.primary,
-              null,
-              '/orders',
-            ),
-            _buildMetricCard(
-              context,
-              Icons.people_outline,
-              'Total Clients',
-              '48',
-              'Active clients',
-              AppColors.success,
-              null,
-              '/clients',
-            ),
-            _buildMetricCard(
-              context,
-              Icons.description_outlined,
-              'Total Quotations',
-              '89',
-              'All time',
-              AppColors.primary,
-              null,
-              '/quotations',
-            ),
-          ],
+        return SizedBox(
+          height: gridHeight,
+          child: GridView.count(
+            crossAxisCount: crossAxisCount,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: AppDimensions.spacing16,
+            mainAxisSpacing: AppDimensions.spacing16,
+            childAspectRatio: aspectRatio.clamp(
+              1.0,
+              3.0,
+            ), // Clamp to reasonable range
+            children: [
+              _buildMetricCard(
+                context,
+                Icons.leaderboard_outlined,
+                'Total Leads',
+                '42',
+                'Past 30 days',
+                AppColors.info,
+                AppColors.success,
+                '/leads',
+              ),
+              _buildMetricCard(
+                context,
+                Icons.calendar_today_outlined,
+                'Upcoming Orders',
+                '12',
+                'Photography shoots in next 30 days',
+                AppColors.primary,
+                null,
+                '/orders',
+              ),
+              _buildMetricCard(
+                context,
+                Icons.people_outline,
+                'Total Clients',
+                '48',
+                'Active clients',
+                AppColors.success,
+                null,
+                '/clients',
+              ),
+              _buildMetricCard(
+                context,
+                Icons.description_outlined,
+                'Total Quotations',
+                '89',
+                'All time',
+                AppColors.primary,
+                null,
+                '/quotations',
+              ),
+            ],
+          ),
         );
       },
     );
@@ -284,102 +303,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildCalendarView(EventProvider provider) {
     final events = provider.getEventsForDay(_selectedDay ?? _focusedDay);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-    final calendarFormat = isMobile
-        ? CalendarFormat.week
-        : CalendarFormat.month;
-    final calendarHeight = isMobile
-        ? 300.0
-        : screenWidth < 1200
-        ? 320.0
-        : 350.0;
-    final eventListHeight = isMobile ? 400.0 : 600.0;
-    final calendarMargin = EdgeInsets.all(
-      isMobile ? AppDimensions.spacing8 : AppDimensions.spacing16,
-    );
 
     return Column(
       children: [
         Card(
-          margin: calendarMargin,
-          child: SizedBox(
-            height: calendarHeight,
+          margin: const EdgeInsets.all(AppDimensions.spacing16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: Responsive.value(
+                context: context,
+                mobile: 300.0,
+                tablet: 350.0,
+                desktop: 200.0,
+              ),
+            ),
             child: TableCalendar<Event>(
               firstDay: DateTime.utc(2020, 10, 16),
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: _focusedDay,
               selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              calendarFormat: calendarFormat,
+              calendarFormat: _calendarFormat,
               eventLoader: (day) => provider.getEventsForDay(day),
               startingDayOfWeek: StartingDayOfWeek.monday,
-              calendarStyle: CalendarStyle(
+              calendarStyle: const CalendarStyle(
                 outsideDaysVisible: false,
-                markerDecoration: const BoxDecoration(
+                markerDecoration: BoxDecoration(
                   color: AppColors.primary,
                   shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                ),
-                selectedDecoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                defaultTextStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 12
-                      : screenWidth < 1200
-                      ? 13
-                      : 14,
-                ),
-                weekendTextStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 12
-                      : screenWidth < 1200
-                      ? 13
-                      : 14,
-                ),
-                outsideTextStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 12
-                      : screenWidth < 1200
-                      ? 13
-                      : 14,
-                  color: AppColors.textSecondary.withOpacity(0.5),
-                ),
-              ),
-              headerStyle: HeaderStyle(
-                titleCentered: true,
-                formatButtonVisible: !isMobile, // Hide format button on mobile
-                titleTextStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 16
-                      : screenWidth < 1200
-                      ? 17
-                      : 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 10
-                      : screenWidth < 1200
-                      ? 11
-                      : 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
-                weekendStyle: TextStyle(
-                  fontSize: isMobile
-                      ? 10
-                      : screenWidth < 1200
-                      ? 11
-                      : 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
                 ),
               ),
               onDaySelected: (selectedDay, focusedDay) {
@@ -391,7 +341,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 }
               },
               onFormatChanged: (format) {
-                // Format changes disabled for responsive behavior
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
               },
               onPageChanged: (focusedDay) {
                 _focusedDay = focusedDay;
@@ -399,19 +353,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ),
-        const Divider(),
-        SizedBox(
-          height: eventListHeight,
-          child: events.isEmpty
-              ? const Center(child: Text('No events for this day'))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(AppDimensions.spacing8),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    return _buildEventCard(events[index]);
-                  },
-                ),
-        ),
+        if (events.isNotEmpty) ...[
+          const Divider(),
+          SizedBox(
+            height: Responsive.value(
+              context: context,
+              mobile: 200.0,
+              tablet: 250.0,
+              desktop: 150.0,
+            ),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(AppDimensions.spacing8),
+              itemCount: events.length,
+              itemBuilder: (context, index) {
+                return _buildEventCard(events[index]);
+              },
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -534,14 +493,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Image.asset(AppImages.appLogo, width: 48, height: 48),
                 const SizedBox(height: AppDimensions.spacing8),
-                Text(
-                  'The Sacred Souls',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.textOnPrimary,
-                  ),
-                ),
+
+                Image.asset(AppImages.appLogo, width: 70, height: 110),
+                // Text(
+                //   'The Sacred Souls',
+                //   style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                //     color: AppColors.textOnPrimary,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -569,12 +529,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: 'Orders',
             route: '/orders',
           ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.camera_alt,
-            title: 'Events',
-            route: '/events',
-          ),
+          // _buildDrawerItem(
+          //   context,
+          //   icon: Icons.camera_alt,
+          //   title: 'Events',
+          //   route: '/events',
+          // ),
           _buildDrawerItem(
             context,
             icon: Icons.description_outlined,

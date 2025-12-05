@@ -75,10 +75,20 @@ class _LoginScreenState extends State<LoginScreen> {
               // Logo
               Image.asset(
                 AppImages.appLogo,
-                width: AppDimensions.iconXXXLarge * 2,
-                height: AppDimensions.iconXXXLarge * 2,
+                width: Responsive.value(
+                  context: context,
+                  mobile: 100.0,
+                  tablet: 150.0,
+                  desktop: 200.0,
+                ),
+                height: Responsive.value(
+                  context: context,
+                  mobile: 100.0,
+                  tablet: 150.0,
+                  desktop: 200.0,
+                ),
               ),
-              const SizedBox(height: AppDimensions.spacing16),
+              const SizedBox(height: AppDimensions.spacing4),
               Text(
                 'The Sacred Souls',
                 style: Theme.of(context).textTheme.headlineLarge,
@@ -109,8 +119,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Logo
                 Image.asset(
                   AppImages.appLogo,
-                  width: AppDimensions.iconXXLarge * 2,
-                  height: AppDimensions.iconXXLarge * 2,
+                  width: Responsive.value(
+                    context: context,
+                    mobile: 100.0,
+                    tablet: 150.0,
+                    desktop: 200.0,
+                  ),
+                  height: Responsive.value(
+                    context: context,
+                    mobile: 100.0,
+                    tablet: 150.0,
+                    desktop: 200.0,
+                  ),
                 ),
                 const SizedBox(height: AppDimensions.spacing16),
                 Text(
